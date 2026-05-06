@@ -93,7 +93,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--root",
-        default="raw_data",
+        default=r"F:\zhujiao\archive",
         help="Root directory that contains patient subfolders.",
     )
     args = parser.parse_args()

@@ -26,7 +26,7 @@ TRAIN_RATIO = 0.7
 VAL_RATIO = 0.1
 TEST_RATIO = 0.2
 NUM_WORKERS = 4
-BACKGROUND_PSNR_THRESH = 70.0
+BACKGROUND_PSNR_THRESH = 56.0
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
@@ -274,7 +274,7 @@ def main():
         f.write(f"Count  : {len(psnr_all)}\n")
         f.write(f"PSNR dB (mean): {avg_psnr_full:.4f}\n")
         f.write(f"SSIM (mean)   : {avg_ssim_full:.4f}\n\n")
-        f.write("=== Tissue Slices (PSNR <= 70 dB) ===\n")
+        f.write("=== Tissue Slices (PSNR <= 56.0 dB) ===\n")
         f.write(f"Count  : {len(psnr_tissue)}\n")
         f.write(f"PSNR dB (mean): {avg_psnr_tissue:.4f}\n")
         f.write(f"SSIM (mean)   : {avg_ssim_tissue:.4f}\n\n")

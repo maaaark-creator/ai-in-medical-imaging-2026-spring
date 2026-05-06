@@ -191,12 +191,12 @@ def main():
         f.write("=== All Slices ===\n")
         f.write(f"Count: {len(psnr_all)}\n")
         f.write(f"PSNR Mean: {np.mean(psnr_all):.4f} dB\n")
-        f.write(f"SSIM Mean: {np.mean(ssim_all):.4f}\n\n")
-        f.write("=== Tissue Slices (PSNR <= 72 dB) ===\n")
+        f.write(f"SSIM Mean: {np.mean(ssim_all):.4f}\n")
+        f.write(f"Max PSNR in test set: {np.max(psnr_all):.4f} dB\n\n")
+        f.write("=== Tissue Slices (PSNR <= 56 dB) ===\n")
         f.write(f"Count: {len(psnr_tissue)}\n")
         f.write(f"PSNR Mean: {np.mean(psnr_tissue):.4f} dB\n")
         f.write(f"SSIM Mean: {np.mean(ssim_tissue):.4f}\n")
-        f.write(f"Max PSNR in test set: {np.max(psnr_all):.4f} dB\n")
 
     csv_path = os.path.join(OUTPUT_DIR, "psnr_ssim_raw.csv")
     with open(csv_path, 'w', newline='') as csvfile:
