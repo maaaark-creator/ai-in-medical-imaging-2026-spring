@@ -1,22 +1,30 @@
+import argparse
 import os
 import random
+from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-import matplotlib.pyplot as plt
 import nibabel as nib
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from collections import defaultdict
 from tqdm import tqdm
 
-UNDERSAMPLED_DIR = os.path.expanduser(
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
+
+import matplotlib.pyplot as plt
+
+LEGACY_UNDERSAMPLED_DIR = Path(os.path.expanduser(
     "~/Desktop/project1_without_rawdata/undersampled_raw_data_t2w_r5"
-)
-FULLY_SAMPLED_DIR = os.path.expanduser("~/Downloads/dataset/archive")
-OUTPUT_DIR = os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+))
+LEGACY_FULLY_SAMPLED_DIR = Path(os.path.expanduser("~/Downloads/dataset/archive"))
+LEGACY_OUTPUT_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables"))
+LOCAL_FULLY_SAMPLED_DIR = PROJECT_ROOT.parent / "archive"
+LOCAL_UNDERSAMPLED_DIR = PROJECT_ROOT / "outputs" / "task1" / "undersampled_raw_data_t2w_r5"
+LOCAL_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "task2" / "unet_baseline"
 
 BATCH_SIZE = 16
 NUM_EPOCHS = 20
@@ -31,14 +39,65 @@ BACKGROUND_PSNR_THRESH = 56.0
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
+def expand_path(path: Path) -> Path:
+    return Path(os.path.expanduser(str(path))).resolve()
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Train a 2D U-Net baseline for undersampled T2w reconstruction.")
+    parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses repo-relative paths; legacy keeps the original cloud-platform paths.",
+    )
+    parser.add_argument("--undersampled-dir", type=Path, default=None, help="Override undersampled T2w root.")
+    parser.add_argument("--fully-sampled-dir", type=Path, default=None, help="Override fully sampled BraTS root.")
+    parser.add_argument("--output-dir", type=Path, default=None, help="Override output directory.")
+    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
+    parser.add_argument("--epochs", type=int, default=NUM_EPOCHS)
+    parser.add_argument("--learning-rate", type=float, default=LEARNING_RATE)
+    parser.add_argument("--num-workers", type=int, default=NUM_WORKERS)
+    parser.add_argument("--seed", type=int, default=42)
+    return parser.parse_args()
+
+def resolve_paths(args):
+    if args.path_profile == "legacy":
+        undersampled_dir = LEGACY_UNDERSAMPLED_DIR
+        fully_sampled_dir = LEGACY_FULLY_SAMPLED_DIR
+        output_dir = LEGACY_OUTPUT_DIR
+    else:
+        undersampled_dir = LOCAL_UNDERSAMPLED_DIR
+        fully_sampled_dir = LOCAL_FULLY_SAMPLED_DIR
+        output_dir = LOCAL_OUTPUT_DIR
+
+    if args.undersampled_dir is not None:
+        undersampled_dir = args.undersampled_dir
+    if args.fully_sampled_dir is not None:
+        fully_sampled_dir = args.fully_sampled_dir
+    if args.output_dir is not None:
+        output_dir = args.output_dir
+
+    return expand_path(undersampled_dir), expand_path(fully_sampled_dir), expand_path(output_dir)
+
+def find_t2w_path(root, patient_id):
+    root = Path(root)
+    candidates = [
+        root / patient_id / f"{patient_id}-t2w.nii",
+        root / patient_id / f"{patient_id}-t2w.nii.gz",
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+    return candidates[0]
+
 class BraTSSliceDataset(Dataset):
     def __init__(self, patient_list, undersampled_root, fully_sampled_root):
         self.volumes = []
         self.slice_index = []
         print("Loading volumes (strict pairing)...")
         for pid in tqdm(patient_list, desc="Loading patients"):
-            us_path = os.path.join(undersampled_root, pid, f"{pid}-t2w.nii")
-            fs_path = os.path.join(fully_sampled_root, pid, f"{pid}-t2w.nii")
+            us_path = find_t2w_path(undersampled_root, pid)
+            fs_path = find_t2w_path(fully_sampled_root, pid)
             if not os.path.exists(us_path):
                 print(f"Missing undersampled: {us_path}, skipping {pid}")
                 continue
@@ -134,13 +193,21 @@ def compute_psnr_ssim(pred, target):
     return float(psnr), float(ssim)
 
 def main():
-    undersampled_patients = sorted(os.listdir(UNDERSAMPLED_DIR))
-    fully_sampled_patients = sorted(os.listdir(FULLY_SAMPLED_DIR))
+    args = parse_args()
+    undersampled_dir, fully_sampled_dir, output_dir = resolve_paths(args)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Path profile       : {args.path_profile}")
+    print(f"Undersampled root  : {undersampled_dir}")
+    print(f"Fully sampled root : {fully_sampled_dir}")
+    print(f"Output dir         : {output_dir}")
+
+    undersampled_patients = sorted(os.listdir(undersampled_dir))
+    fully_sampled_patients = sorted(os.listdir(fully_sampled_dir))
     common_patients = sorted(
         list(set(undersampled_patients) & set(fully_sampled_patients))
     )
     print(f"Total patients with both data: {len(common_patients)}")
-    random.seed(42)
+    random.seed(args.seed)
     random.shuffle(common_patients)
     n_total = len(common_patients)
     n_train = int(n_total * TRAIN_RATIO)
@@ -152,22 +219,22 @@ def main():
     print(f"Val   patients: {len(val_patients)}")
     print(f"Test  patients: {len(test_patients)}")
     train_dataset = BraTSSliceDataset(
-        train_patients, UNDERSAMPLED_DIR, FULLY_SAMPLED_DIR
+        train_patients, undersampled_dir, fully_sampled_dir
     )
-    val_dataset = BraTSSliceDataset(val_patients, UNDERSAMPLED_DIR, FULLY_SAMPLED_DIR)
-    test_dataset = BraTSSliceDataset(test_patients, UNDERSAMPLED_DIR, FULLY_SAMPLED_DIR)
+    val_dataset = BraTSSliceDataset(val_patients, undersampled_dir, fully_sampled_dir)
+    test_dataset = BraTSSliceDataset(test_patients, undersampled_dir, fully_sampled_dir)
     train_loader = DataLoader(
         train_dataset,
-        batch_size=BATCH_SIZE,
+        batch_size=args.batch_size,
         shuffle=True,
-        num_workers=NUM_WORKERS,
+        num_workers=args.num_workers,
         pin_memory=True,
     )
     val_loader = DataLoader(
         val_dataset,
-        batch_size=BATCH_SIZE,
+        batch_size=args.batch_size,
         shuffle=False,
-        num_workers=NUM_WORKERS,
+        num_workers=args.num_workers,
         pin_memory=True,
     )
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
@@ -176,7 +243,7 @@ def main():
     print(f"Test  slices: {len(test_dataset)}")
     model = UNet(in_ch=1, out_ch=1).to(device)
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", factor=0.5, patience=5, verbose=False
     )
@@ -185,11 +252,11 @@ def main():
     best_val_loss = float("inf")
     epochs_without_improvement = 0
 
-    for epoch in range(1, NUM_EPOCHS + 1):
+    for epoch in range(1, args.epochs + 1):
 
         model.train()
         train_loss = 0.0
-        pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{NUM_EPOCHS} [Train]")
+        pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{args.epochs} [Train]")
         for inputs, targets in pbar:
             inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
@@ -218,7 +285,7 @@ def main():
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             epochs_without_improvement = 0
-            torch.save(model.state_dict(), os.path.join(OUTPUT_DIR, "best_unet.pth"))
+            torch.save(model.state_dict(), output_dir / "best_unet.pth")
             print("  -> Saved best model")
         else:
             epochs_without_improvement += 1
@@ -233,11 +300,11 @@ def main():
     plt.ylabel("MSE Loss")
     plt.legend()
     plt.title("Training and Validation Loss")
-    plt.savefig(os.path.join(OUTPUT_DIR, "loss_curve.png"))
+    plt.savefig(output_dir / "loss_curve.png")
     plt.close()
     print("\n=== Testing Best Model ===")
     model.load_state_dict(
-        torch.load(os.path.join(OUTPUT_DIR, "best_unet.pth"), map_location=device)
+        torch.load(output_dir / "best_unet.pth", map_location=device)
     )
     model.eval()
     psnr_all, ssim_all = [], []
@@ -269,7 +336,7 @@ def main():
         f"Tissue slices only ({len(psnr_tissue)}): PSNR = {avg_psnr_tissue:.4f} dB, SSIM = {avg_ssim_tissue:.4f}"
     )
 
-    with open(os.path.join(OUTPUT_DIR, "metrics.txt"), "w") as f:
+    with open(output_dir / "metrics.txt", "w") as f:
         f.write("=== All Slices ===\n")
         f.write(f"Count  : {len(psnr_all)}\n")
         f.write(f"PSNR dB (mean): {avg_psnr_full:.4f}\n")
@@ -325,9 +392,9 @@ def main():
             if len(collected) == len(sample_indices):
                 break
     plt.tight_layout()
-    plt.savefig(os.path.join(OUTPUT_DIR, "reconstruction_samples.png"))
+    plt.savefig(output_dir / "reconstruction_samples.png")
     plt.close()
-    print(f"\nAll results saved to {OUTPUT_DIR}")
+    print(f"\nAll results saved to {output_dir}")
     print("Done.")
 
 

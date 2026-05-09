@@ -1,24 +1,78 @@
+import argparse
 import os
 import random
 import warnings
+from pathlib import Path
 import numpy as np
 import nibabel as nib
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from tqdm import tqdm
 
-UNDERSAMPLED_DIR = os.path.expanduser(
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+LEGACY_UNDERSAMPLED_DIR = Path(os.path.expanduser(
     "~/Desktop/project1_without_rawdata/undersampled_raw_data_t2w_r5"
-)
-FULLY_SAMPLED_DIR = os.path.expanduser("~/Downloads/dataset/archive")
-OUTPUT_DIR = os.path.expanduser(
-    "~/Desktop/project1_without_rawdata/task2_final_deliverables"
-)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+))
+LEGACY_FULLY_SAMPLED_DIR = Path(os.path.expanduser("~/Downloads/dataset/archive"))
+LEGACY_OUTPUT_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables"))
+LOCAL_FULLY_SAMPLED_DIR = PROJECT_ROOT.parent / "archive"
+LOCAL_UNDERSAMPLED_DIR = PROJECT_ROOT / "outputs" / "task1" / "undersampled_raw_data_t2w_r5"
+LOCAL_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "task2" / "unet_baseline"
 
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.1
 RANDOM_SEED = 42
 BACKGROUND_PSNR_THRESH = 56.0
+
+
+def expand_path(path: Path) -> Path:
+    return Path(os.path.expanduser(str(path))).resolve()
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Compute input-vs-ground-truth PSNR/SSIM before neural reconstruction.")
+    parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses repo-relative paths; legacy keeps the original cloud-platform paths.",
+    )
+    parser.add_argument("--undersampled-dir", type=Path, default=None, help="Override undersampled T2w root.")
+    parser.add_argument("--fully-sampled-dir", type=Path, default=None, help="Override fully sampled BraTS root.")
+    parser.add_argument("--output-dir", type=Path, default=None, help="Override output directory.")
+    parser.add_argument("--seed", type=int, default=RANDOM_SEED)
+    return parser.parse_args()
+
+
+def resolve_paths(args):
+    if args.path_profile == "legacy":
+        undersampled_dir = LEGACY_UNDERSAMPLED_DIR
+        fully_sampled_dir = LEGACY_FULLY_SAMPLED_DIR
+        output_dir = LEGACY_OUTPUT_DIR
+    else:
+        undersampled_dir = LOCAL_UNDERSAMPLED_DIR
+        fully_sampled_dir = LOCAL_FULLY_SAMPLED_DIR
+        output_dir = LOCAL_OUTPUT_DIR
+
+    if args.undersampled_dir is not None:
+        undersampled_dir = args.undersampled_dir
+    if args.fully_sampled_dir is not None:
+        fully_sampled_dir = args.fully_sampled_dir
+    if args.output_dir is not None:
+        output_dir = args.output_dir
+
+    return expand_path(undersampled_dir), expand_path(fully_sampled_dir), expand_path(output_dir)
+
+
+def find_t2w_path(root, patient_id):
+    root = Path(root)
+    candidates = [
+        root / patient_id / f"{patient_id}-t2w.nii",
+        root / patient_id / f"{patient_id}-t2w.nii.gz",
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+    return candidates[0]
 
 
 def norm_slice(s: np.ndarray) -> np.ndarray:
@@ -48,11 +102,11 @@ def compute_psnr_ssim(input_slice, target_slice):
     return float(psnr), float(ssim)
 
 
-def get_test_patients():
-    us_pats = sorted(os.listdir(UNDERSAMPLED_DIR))
-    fs_pats = sorted(os.listdir(FULLY_SAMPLED_DIR))
+def get_test_patients(undersampled_dir, fully_sampled_dir, seed):
+    us_pats = sorted(os.listdir(undersampled_dir))
+    fs_pats = sorted(os.listdir(fully_sampled_dir))
     common = sorted(list(set(us_pats) & set(fs_pats)))
-    random.seed(RANDOM_SEED)
+    random.seed(seed)
     random.shuffle(common)
     n_train = int(len(common) * TRAIN_RATIO)
     n_val = int(len(common) * VAL_RATIO)
@@ -60,14 +114,22 @@ def get_test_patients():
 
 
 def main():
-    test_patients = get_test_patients()
+    args = parse_args()
+    undersampled_dir, fully_sampled_dir, output_dir = resolve_paths(args)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Path profile       : {args.path_profile}")
+    print(f"Undersampled root  : {undersampled_dir}")
+    print(f"Fully sampled root : {fully_sampled_dir}")
+    print(f"Output dir         : {output_dir}")
+
+    test_patients = get_test_patients(undersampled_dir, fully_sampled_dir, args.seed)
     print(f"Total test patients: {len(test_patients)}")
 
     psnr_all, ssim_all = [], []
 
     for pid in tqdm(test_patients, desc="Processing"):
-        us_path = os.path.join(UNDERSAMPLED_DIR, pid, f"{pid}-t2w.nii")
-        fs_path = os.path.join(FULLY_SAMPLED_DIR, pid, f"{pid}-t2w.nii")
+        us_path = find_t2w_path(undersampled_dir, pid)
+        fs_path = find_t2w_path(fully_sampled_dir, pid)
 
         if not (os.path.exists(us_path) and os.path.exists(fs_path)):
             print(f"Missing file for {pid}, skipping")
@@ -106,7 +168,7 @@ def main():
         f"Tissue slices ({np.sum(tissue_mask)}) -> PSNR: {avg_psnr_tissue:.4f} dB, SSIM: {avg_ssim_tissue:.4f}"
     )
 
-    out_path = os.path.join(OUTPUT_DIR, "metrics_before_recon.txt")
+    out_path = output_dir / "metrics_before_recon.txt"
     with open(out_path, "w") as f:
         f.write("=== Before Reconstruction (Input vs. Ground Truth) ===\n")
         f.write(f"Total slices: {len(psnr_all)}\n\n")

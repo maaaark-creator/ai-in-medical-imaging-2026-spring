@@ -14,21 +14,35 @@
 
 本项目里和这个流程相关的主要脚本有：
 
-- [t2w_to_kspace.py](/d:/ai_medical_imaging/project1/t2w_to_kspace.py)
+- [t2w_to_kspace.py](t2w_to_kspace.py)
   
   作用：把原始全采样 T2w 体数据逐 slice 做 2D FFT，生成 k-space 文件。
 
-- [mask.py](/d:/ai_medical_imaging/project1/mask.py)
+- [mask.py](mask.py)
   
   作用：生成 variable-density mask，在 k-space 中做欠采样，并通过 IFFT 重建 aliased 图像。
 
-- [prepare_undersampling_deliverables.py](/d:/ai_medical_imaging/project1/prepare_undersampling_deliverables.py)
+- [prepare_undersampling_deliverables.py](prepare_undersampling_deliverables.py)
   
   作用：把结果整理成适合提交的目录结构，自动导出 mask 图、三联对比图和 full/aliased 图像对。
 
 ## 2. 输入数据目录要求
 
-脚本默认原始数据放在 `raw_data/` 下，目录结构类似：
+当前本地整理后的推荐结构是：代码仓库和数据集同级放在 `git/` 下，脚本默认使用 `--path-profile local`，也就是从仓库外一层的 `../archive/` 读取数据：
+
+```text
+git/
+  archive/
+    BraTS-GLI-00000-000/
+      BraTS-GLI-00000-000-t2w.nii
+      BraTS-GLI-00000-000-t1c.nii
+      ...
+  ai-in-medical-imaging-2026-spring/
+    task1/
+    task2/
+```
+
+如果需要复用原始教学/云平台写法，也可以加 `--path-profile legacy`，此时会回到旧的 `raw_data/` 相对路径约定：
 
 ```text
 raw_data/
@@ -53,7 +67,7 @@ raw_data/
 运行命令：
 
 ```powershell
-python t2w_to_kspace.py
+python task1/t2w_to_kspace.py
 ```
 
 这个脚本会对每个 T2w volume 的每一张 slice 做 2D FFT，并保存为 `.npz` 文件。
@@ -61,7 +75,7 @@ python t2w_to_kspace.py
 默认输出位置：
 
 ```text
-kspace_t2w_slicewise_fft/
+outputs/task1/kspace_t2w_slicewise_fft/
   BraTS-GLI-00000-000/
     BraTS-GLI-00000-000-t2w_kspace_complex.npz
 ```
@@ -69,7 +83,7 @@ kspace_t2w_slicewise_fft/
 同时还会生成一张 k-space 预览图，保存在：
 
 ```text
-outputs/kspace_previews/
+outputs/task1/kspace_previews/
 ```
 
 ### 第二步：生成 mask 并模拟欠采样、混叠
@@ -77,7 +91,7 @@ outputs/kspace_previews/
 如果只想先看一张示例图，可以运行：
 
 ```powershell
-python mask.py --mode preview --acceleration 5
+python task1/mask.py --mode preview --acceleration 5
 ```
 
 这个命令会生成：
@@ -90,7 +104,7 @@ python mask.py --mode preview --acceleration 5
 默认输出位置：
 
 ```text
-outputs/undersampling_preview/
+outputs/task1/undersampling_preview/
   variable_density_mask_r5_preview.png
   variable_density_mask_r5.npy
   *_undersampling_preview.png
@@ -99,13 +113,13 @@ outputs/undersampling_preview/
 如果想把所有病例都生成欠采样后的体数据，可以运行：
 
 ```powershell
-python mask.py --mode batch --acceleration 5 --save-batch-preview
+python task1/mask.py --mode batch --acceleration 5 --save-batch-preview
 ```
 
 默认输出位置：
 
 ```text
-undersampled_raw_data_t2w_r5/
+outputs/task1/undersampled_raw_data_t2w_r5/
   BraTS-GLI-00000-000/
     BraTS-GLI-00000-000-t2w.nii
 ```
@@ -117,13 +131,13 @@ undersampled_raw_data_t2w_r5/
 如果你想直接得到一套适合提交或汇报展示的结果，运行：
 
 ```powershell
-python prepare_undersampling_deliverables.py
+python task1/prepare_undersampling_deliverables.py
 ```
 
 默认输出位置：
 
 ```text
-outputs/submission_r5_deliverables/
+outputs/task1/submission_r5_deliverables/
   01_mask/
   02_comparisons/
   03_image_pairs/
@@ -133,10 +147,10 @@ outputs/submission_r5_deliverables/
 
 ## 4. 推荐直接使用的命令
 
-如果 `raw_data/` 已经准备好，而且项目里已经有原始 T2w 数据，那么最推荐直接运行：
+如果已经准备好当前的 `../archive/` 数据目录，而且只需要导出 Task 1 展示材料，那么最推荐直接运行：
 
 ```powershell
-python prepare_undersampling_deliverables.py
+python task1/prepare_undersampling_deliverables.py
 ```
 
 这个命令会自动完成以下事情：
@@ -154,25 +168,25 @@ python prepare_undersampling_deliverables.py
 ### 修改导出的示例数量
 
 ```powershell
-python prepare_undersampling_deliverables.py --num-examples 8
+python task1/prepare_undersampling_deliverables.py --num-examples 8
 ```
 
 ### 修改随机种子
 
 ```powershell
-python prepare_undersampling_deliverables.py --seed 123
+python task1/prepare_undersampling_deliverables.py --seed 123
 ```
 
 ### 修改输出目录
 
 ```powershell
-python prepare_undersampling_deliverables.py --output-dir outputs/my_submission_set
+python task1/prepare_undersampling_deliverables.py --output-dir outputs/my_submission_set
 ```
 
 ### 修改加速因子
 
 ```powershell
-python prepare_undersampling_deliverables.py --acceleration 5
+python task1/prepare_undersampling_deliverables.py --acceleration 5
 ```
 
 如果是当前这次作业要求，建议保持为 `5`。
@@ -212,36 +226,36 @@ python prepare_undersampling_deliverables.py --acceleration 5
 
 目前已经整理好的提交目录在：
 
-- [outputs/submission_r5_deliverables](/d:/ai_medical_imaging/project1/outputs/submission_r5_deliverables)
+- `outputs/task1/submission_r5_deliverables`
 
 其中比较关键的文件有：
 
-- [variable_density_mask_r5.png](/d:/ai_medical_imaging/project1/outputs/submission_r5_deliverables/01_mask/variable_density_mask_r5.png)
-- [examples_manifest.csv](/d:/ai_medical_imaging/project1/outputs/submission_r5_deliverables/examples_manifest.csv)
+- `outputs/task1/submission_r5_deliverables/01_mask/variable_density_mask_r5.png`
+- `outputs/task1/submission_r5_deliverables/examples_manifest.csv`
 
 示例三联图：
 
-- [BraTS-GLI-00000-000_slice_077_comparison.png](/d:/ai_medical_imaging/project1/outputs/submission_r5_deliverables/02_comparisons/BraTS-GLI-00000-000_slice_077_comparison.png)
+- `outputs/task1/submission_r5_deliverables/02_comparisons/*_comparison.png`
 
 示例 full / aliased 图像对：
 
-- [BraTS-GLI-00000-000_slice_077_pair.png](/d:/ai_medical_imaging/project1/outputs/submission_r5_deliverables/03_image_pairs/BraTS-GLI-00000-000_slice_077_pair.png)
+- `outputs/task1/submission_r5_deliverables/03_image_pairs/*_pair.png`
 
 ## 8. 完整运行流程
 
 如果从头开始运行，推荐按下面顺序执行：
 
 ```powershell
-python t2w_to_kspace.py
-python mask.py --mode preview --acceleration 5
-python mask.py --mode batch --acceleration 5 --save-batch-preview
-python prepare_undersampling_deliverables.py
+python task1/t2w_to_kspace.py
+python task1/mask.py --mode preview --acceleration 5
+python task1/mask.py --mode batch --acceleration 5 --save-batch-preview
+python task1/prepare_undersampling_deliverables.py
 ```
 
 如果前面的 k-space 和欠采样体数据都已经生成好了，通常直接运行下面这一句就够了：
 
 ```powershell
-python prepare_undersampling_deliverables.py
+python task1/prepare_undersampling_deliverables.py
 ```
 
 ## 9. 实验含义说明

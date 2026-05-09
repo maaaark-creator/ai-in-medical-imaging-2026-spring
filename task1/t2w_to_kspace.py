@@ -1,31 +1,49 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import nibabel as nib
 import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
+
+import matplotlib.pyplot as plt
+
+LOCAL_INPUT_ROOT = PROJECT_ROOT.parent / "archive"
+LOCAL_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task1" / "kspace_t2w_slicewise_fft"
+LOCAL_PREVIEW_DIR = PROJECT_ROOT / "outputs" / "task1" / "kspace_previews"
+LEGACY_INPUT_ROOT = Path("raw_data")
+LEGACY_OUTPUT_ROOT = Path("kspace_t2w_slicewise_fft")
+LEGACY_PREVIEW_DIR = Path("outputs") / "kspace_previews"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Convert all T2w volumes to complex k-space with slice-wise 2D FFT.")
     parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses the current repo-relative data layout; legacy keeps the original relative defaults.",
+    )
+    parser.add_argument(
         "--input-root",
         type=Path,
-        default=Path("raw_data"),
+        default=None,
         help="Root directory containing BraTS case folders.",
     )
     parser.add_argument(
         "--output-root",
         type=Path,
-        default=Path("kspace_t2w_slicewise_fft"),
+        default=None,
         help="Root directory where slice-wise complex k-space files will be written.",
     )
     parser.add_argument(
         "--preview-dir",
         type=Path,
-        default=Path("outputs") / "kspace_previews",
+        default=None,
         help="Directory for preview PNG files.",
     )
     parser.add_argument(
@@ -47,6 +65,21 @@ def parse_args() -> argparse.Namespace:
         help="Optional limit on the number of T2w volumes to convert.",
     )
     return parser.parse_args()
+
+
+def resolve_paths(args: argparse.Namespace) -> None:
+    if args.path_profile == "legacy":
+        input_root = LEGACY_INPUT_ROOT
+        output_root = LEGACY_OUTPUT_ROOT
+        preview_dir = LEGACY_PREVIEW_DIR
+    else:
+        input_root = LOCAL_INPUT_ROOT
+        output_root = LOCAL_OUTPUT_ROOT
+        preview_dir = LOCAL_PREVIEW_DIR
+
+    args.input_root = args.input_root if args.input_root is not None else input_root
+    args.output_root = args.output_root if args.output_root is not None else output_root
+    args.preview_dir = args.preview_dir if args.preview_dir is not None else preview_dir
 
 
 def find_t2w_files(input_root: Path) -> list[Path]:
@@ -109,6 +142,11 @@ def save_preview(original: np.ndarray, kspace: np.ndarray, preview_path: Path, s
 
 def main() -> None:
     args = parse_args()
+    resolve_paths(args)
+    print(f"Path profile: {args.path_profile}")
+    print(f"Input root  : {args.input_root.resolve()}")
+    print(f"Output root : {args.output_root.resolve()}")
+    print(f"Preview dir : {args.preview_dir.resolve()}")
     t2w_files = find_t2w_files(args.input_root)
     if not t2w_files:
         raise FileNotFoundError(f"No T2w files found under {args.input_root}")

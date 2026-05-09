@@ -1,16 +1,36 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import nibabel as nib
 import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
+
+import matplotlib.pyplot as plt
+
+LOCAL_INPUT_ROOT = PROJECT_ROOT.parent / "archive"
+LOCAL_KSPACE_ROOT = PROJECT_ROOT / "outputs" / "task1" / "kspace_t2w_slicewise_fft"
+LOCAL_PREVIEW_DIR = PROJECT_ROOT / "outputs" / "task1" / "undersampling_preview"
+LOCAL_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task1" / "undersampled_raw_data_t2w_r5"
+LEGACY_INPUT_ROOT = Path("raw_data")
+LEGACY_KSPACE_ROOT = Path("kspace_t2w_slicewise_fft")
+LEGACY_PREVIEW_DIR = Path("outputs") / "undersampling_preview"
+LEGACY_OUTPUT_ROOT = Path("undersampled_raw_data_t2w_r5")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Preview or batch-generate random variable-density undersampled T2w reconstructions."
+    )
+    parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses the current repo-relative data layout; legacy keeps the original relative defaults.",
     )
     parser.add_argument(
         "--mode",
@@ -21,25 +41,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--input-root",
         type=Path,
-        default=Path("raw_data"),
+        default=None,
         help="Root directory containing BraTS case folders and original T2w NIfTI files.",
     )
     parser.add_argument(
         "--kspace-root",
         type=Path,
-        default=Path("kspace_t2w_slicewise_fft"),
+        default=None,
         help="Root directory containing precomputed slice-wise centered complex k-space .npz files.",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("outputs") / "undersampling_preview",
+        default=None,
         help="Directory used for preview figures.",
     )
     parser.add_argument(
         "--output-root",
         type=Path,
-        default=Path("undersampled_raw_data_t2w_r5"),
+        default=None,
         help="Batch output root. Folder structure mirrors raw_data, but each case folder stores only undersampled T2w.",
     )
     parser.add_argument(
@@ -96,6 +116,24 @@ def parse_args() -> argparse.Namespace:
         help="In batch mode, also save one preview figure for the first processed case.",
     )
     return parser.parse_args()
+
+
+def resolve_paths(args: argparse.Namespace) -> None:
+    if args.path_profile == "legacy":
+        input_root = LEGACY_INPUT_ROOT
+        kspace_root = LEGACY_KSPACE_ROOT
+        output_dir = LEGACY_PREVIEW_DIR
+        output_root = LEGACY_OUTPUT_ROOT
+    else:
+        input_root = LOCAL_INPUT_ROOT
+        kspace_root = LOCAL_KSPACE_ROOT
+        output_dir = LOCAL_PREVIEW_DIR
+        output_root = LOCAL_OUTPUT_ROOT
+
+    args.input_root = args.input_root if args.input_root is not None else input_root
+    args.kspace_root = args.kspace_root if args.kspace_root is not None else kspace_root
+    args.output_dir = args.output_dir if args.output_dir is not None else output_dir
+    args.output_root = args.output_root if args.output_root is not None else output_root
 
 
 def find_t2w_files(input_root: Path) -> list[Path]:
@@ -423,6 +461,12 @@ def run_batch(args: argparse.Namespace) -> None:
 
 def main() -> None:
     args = parse_args()
+    resolve_paths(args)
+    print(f"Path profile: {args.path_profile}")
+    print(f"Input root  : {args.input_root.resolve()}")
+    print(f"K-space root: {args.kspace_root.resolve()}")
+    print(f"Preview dir : {args.output_dir.resolve()}")
+    print(f"Output root : {args.output_root.resolve()}")
     if args.mode == "preview":
         run_preview(args)
     else:

@@ -3,6 +3,15 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Project data and generated outputs
+raw_data/
+archive/
+archive.zip
+outputs/
+kspace_t2w_slicewise_fft/
+undersampled_raw_data_t2w_r5/
+.matplotlib/
+
 # C extensions
 *.so
 

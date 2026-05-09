@@ -1,20 +1,27 @@
+import argparse
 import os
 import random
+from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-import matplotlib.pyplot as plt
 import nibabel as nib
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from tqdm import tqdm
 import csv
 
-UNDERSAMPLED_DIR = os.path.expanduser("~/Desktop/project1_without_rawdata/undersampled_raw_data_t2w_r5")
-FULLY_SAMPLED_DIR = os.path.expanduser("~/Downloads/dataset/archive")
-BEST_MODEL_PATH = os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables/best_unet.pth")
-OUTPUT_DIR = os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
+
+import matplotlib.pyplot as plt
+
+LEGACY_UNDERSAMPLED_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/undersampled_raw_data_t2w_r5"))
+LEGACY_FULLY_SAMPLED_DIR = Path(os.path.expanduser("~/Downloads/dataset/archive"))
+LEGACY_OUTPUT_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables"))
+LOCAL_FULLY_SAMPLED_DIR = PROJECT_ROOT.parent / "archive"
+LOCAL_UNDERSAMPLED_DIR = PROJECT_ROOT / "outputs" / "task1" / "undersampled_raw_data_t2w_r5"
+LOCAL_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "task2" / "unet_baseline"
 
 BACKGROUND_PSNR_THRESH = 56.0 
 RANDOM_SEED = 42
@@ -25,14 +32,64 @@ TEST_RATIO = 0.2
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
+def expand_path(path: Path) -> Path:
+    return Path(os.path.expanduser(str(path))).resolve()
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Evaluate the trained 2D U-Net reconstruction baseline.")
+    parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses repo-relative paths; legacy keeps the original cloud-platform paths.",
+    )
+    parser.add_argument("--undersampled-dir", type=Path, default=None, help="Override undersampled T2w root.")
+    parser.add_argument("--fully-sampled-dir", type=Path, default=None, help="Override fully sampled BraTS root.")
+    parser.add_argument("--output-dir", type=Path, default=None, help="Override output directory.")
+    parser.add_argument("--model-path", type=Path, default=None, help="Override path to best_unet.pth.")
+    parser.add_argument("--seed", type=int, default=RANDOM_SEED)
+    return parser.parse_args()
+
+def resolve_paths(args):
+    if args.path_profile == "legacy":
+        undersampled_dir = LEGACY_UNDERSAMPLED_DIR
+        fully_sampled_dir = LEGACY_FULLY_SAMPLED_DIR
+        output_dir = LEGACY_OUTPUT_DIR
+    else:
+        undersampled_dir = LOCAL_UNDERSAMPLED_DIR
+        fully_sampled_dir = LOCAL_FULLY_SAMPLED_DIR
+        output_dir = LOCAL_OUTPUT_DIR
+
+    if args.undersampled_dir is not None:
+        undersampled_dir = args.undersampled_dir
+    if args.fully_sampled_dir is not None:
+        fully_sampled_dir = args.fully_sampled_dir
+    if args.output_dir is not None:
+        output_dir = args.output_dir
+
+    output_dir = expand_path(output_dir)
+    model_path = expand_path(args.model_path) if args.model_path is not None else output_dir / "best_unet.pth"
+    return expand_path(undersampled_dir), expand_path(fully_sampled_dir), output_dir, model_path
+
+def find_t2w_path(root, patient_id):
+    root = Path(root)
+    candidates = [
+        root / patient_id / f"{patient_id}-t2w.nii",
+        root / patient_id / f"{patient_id}-t2w.nii.gz",
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+    return candidates[0]
+
 class BraTSSliceDataset(Dataset):
     def __init__(self, patient_list, undersampled_root, fully_sampled_root):
         self.volumes = []
         self.slice_index = []
         print("Loading volumes (strict pairing)...")
         for pid in tqdm(patient_list, desc="Loading patients"):
-            us_path = os.path.join(undersampled_root, pid, f"{pid}-t2w.nii")
-            fs_path = os.path.join(fully_sampled_root, pid, f"{pid}-t2w.nii")
+            us_path = find_t2w_path(undersampled_root, pid)
+            fs_path = find_t2w_path(fully_sampled_root, pid)
             if not os.path.exists(us_path) or not os.path.exists(fs_path):
                 continue
             try:
@@ -154,21 +211,30 @@ def save_metric_distributions(psnr_all, ssim_all, tissue_mask, output_dir):
 
 
 def main():
-    us_pats = sorted(os.listdir(UNDERSAMPLED_DIR))
-    fs_pats = sorted(os.listdir(FULLY_SAMPLED_DIR))
+    args = parse_args()
+    undersampled_dir, fully_sampled_dir, output_dir, model_path = resolve_paths(args)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Path profile       : {args.path_profile}")
+    print(f"Undersampled root  : {undersampled_dir}")
+    print(f"Fully sampled root : {fully_sampled_dir}")
+    print(f"Model path         : {model_path}")
+    print(f"Output dir         : {output_dir}")
+
+    us_pats = sorted(os.listdir(undersampled_dir))
+    fs_pats = sorted(os.listdir(fully_sampled_dir))
     common = sorted(list(set(us_pats) & set(fs_pats)))
-    random.seed(RANDOM_SEED)
+    random.seed(args.seed)
     random.shuffle(common)
     n_total = len(common)
     n_train = int(n_total * TRAIN_RATIO)
     n_val = int(n_total * VAL_RATIO)
     test_patients = common[n_train+n_val:]
 
-    test_dataset = BraTSSliceDataset(test_patients, UNDERSAMPLED_DIR, FULLY_SAMPLED_DIR)
+    test_dataset = BraTSSliceDataset(test_patients, undersampled_dir, fully_sampled_dir)
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
 
     model = UNet(1, 1).to(device)
-    model.load_state_dict(torch.load(BEST_MODEL_PATH, map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
 
     psnr_all, ssim_all = [], []
@@ -187,7 +253,7 @@ def main():
     psnr_tissue = psnr_all[tissue_mask]
     ssim_tissue = ssim_all[tissue_mask]
  
-    with open(os.path.join(OUTPUT_DIR, "metrics.txt"), 'w') as f:
+    with open(output_dir / "metrics.txt", 'w') as f:
         f.write("=== All Slices ===\n")
         f.write(f"Count: {len(psnr_all)}\n")
         f.write(f"PSNR Mean: {np.mean(psnr_all):.4f} dB\n")
@@ -198,7 +264,7 @@ def main():
         f.write(f"PSNR Mean: {np.mean(psnr_tissue):.4f} dB\n")
         f.write(f"SSIM Mean: {np.mean(ssim_tissue):.4f}\n")
 
-    csv_path = os.path.join(OUTPUT_DIR, "psnr_ssim_raw.csv")
+    csv_path = output_dir / "psnr_ssim_raw.csv"
     with open(csv_path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Index", "PSNR_dB", "SSIM"])
@@ -235,12 +301,12 @@ def main():
             if len(collected) == 5:
                 break
     plt.tight_layout()
-    plt.savefig(os.path.join(OUTPUT_DIR, "reconstruction_samples.png"))
+    plt.savefig(output_dir / "reconstruction_samples.png")
     plt.close()
 
-    save_metric_distributions(psnr_all, ssim_all, tissue_mask, OUTPUT_DIR)
+    save_metric_distributions(psnr_all, ssim_all, tissue_mask, output_dir)
 
-    print(f"All deliverables saved to {OUTPUT_DIR}")
+    print(f"All deliverables saved to {output_dir}")
 
 if __name__ == "__main__":
     main()

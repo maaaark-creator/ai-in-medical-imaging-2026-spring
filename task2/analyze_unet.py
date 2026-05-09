@@ -1,8 +1,13 @@
+import argparse
+import os
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import argparse
-import os
 from scipy.signal import find_peaks
 
 def detect_threshold_from_histogram(psnr_values, bins=100):

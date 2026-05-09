@@ -10,21 +10,31 @@ from plotly.offline import plot
 from skimage.measure import marching_cubes
 
 
-DEFAULT_CASE_DIR = Path("raw_data") / "BraTS-GLI-00000-000"
-DEFAULT_T1 = DEFAULT_CASE_DIR / "BraTS-GLI-00000-000-t1n.nii"
-DEFAULT_T2 = DEFAULT_CASE_DIR / "BraTS-GLI-00000-000-t2w.nii"
-DEFAULT_SEG = DEFAULT_CASE_DIR / "BraTS-GLI-00000-000-seg.nii"
+PROJECT_ROOT = Path(__file__).resolve().parent
+LOCAL_DATA_ROOT = PROJECT_ROOT.parent / "archive"
+LEGACY_DATA_ROOT = Path("raw_data")
+DEFAULT_CASE_ID = "BraTS-GLI-00000-000"
+LOCAL_OUTPUT = PROJECT_ROOT / "outputs" / "visualization" / "t1_tumor_3d_visualization.html"
+LEGACY_OUTPUT = Path("outputs") / "t1_tumor_3d_visualization.html"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Visualize a rough 3D brain structure from fused T1/T2 with tumor overlay.")
-    parser.add_argument("--t1", type=Path, default=DEFAULT_T1, help="Path to the T1 volume (.nii or .nii.gz).")
-    parser.add_argument("--t2", type=Path, default=DEFAULT_T2, help="Path to the T2 volume (.nii or .nii.gz).")
-    parser.add_argument("--seg", type=Path, default=DEFAULT_SEG, help="Path to the tumor segmentation volume.")
+    parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses ../archive next to the repository; legacy keeps the original raw_data default.",
+    )
+    parser.add_argument("--data-root", type=Path, default=None, help="Root directory containing BraTS case folders.")
+    parser.add_argument("--case-id", type=str, default=DEFAULT_CASE_ID, help="Case folder to visualize.")
+    parser.add_argument("--t1", type=Path, default=None, help="Path to the T1 volume (.nii or .nii.gz).")
+    parser.add_argument("--t2", type=Path, default=None, help="Path to the T2 volume (.nii or .nii.gz).")
+    parser.add_argument("--seg", type=Path, default=None, help="Path to the tumor segmentation volume.")
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("outputs") / "t1_tumor_3d_visualization.html",
+        default=None,
         help="HTML path for the interactive 3D visualization.",
     )
     parser.add_argument(
@@ -53,7 +63,26 @@ def parse_args() -> argparse.Namespace:
         help="Segmentation labels to merge into the tumor mask.",
     )
     parser.add_argument("--no-open", action="store_true", help="Save the HTML but do not open it automatically.")
-    return parser.parse_args()
+    args = parser.parse_args()
+    resolve_paths(args)
+    return args
+
+
+def resolve_paths(args: argparse.Namespace) -> None:
+    data_root = args.data_root
+    output = args.output
+    if args.path_profile == "legacy":
+        data_root = LEGACY_DATA_ROOT if data_root is None else data_root
+        output = LEGACY_OUTPUT if output is None else output
+    else:
+        data_root = LOCAL_DATA_ROOT if data_root is None else data_root
+        output = LOCAL_OUTPUT if output is None else output
+
+    case_dir = data_root / args.case_id
+    args.t1 = args.t1 if args.t1 is not None else case_dir / f"{args.case_id}-t1n.nii"
+    args.t2 = args.t2 if args.t2 is not None else case_dir / f"{args.case_id}-t2w.nii"
+    args.seg = args.seg if args.seg is not None else case_dir / f"{args.case_id}-seg.nii"
+    args.output = output
 
 
 def load_volume(path: Path) -> tuple[np.ndarray, tuple[float, float, float]]:

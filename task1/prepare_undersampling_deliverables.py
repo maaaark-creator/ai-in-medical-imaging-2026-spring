@@ -2,12 +2,22 @@ from __future__ import annotations
 
 import argparse
 import csv
+import os
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from mask import find_t2w_files, generate_variable_density_mask, ifft2c, load_volume
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
+
+import matplotlib.pyplot as plt
+
+LOCAL_INPUT_ROOT = PROJECT_ROOT.parent / "archive"
+LOCAL_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "task1" / "submission_r5_deliverables"
+LEGACY_INPUT_ROOT = Path("raw_data")
+LEGACY_OUTPUT_DIR = Path("outputs") / "submission_r5_deliverables"
 
 
 def parse_args() -> argparse.Namespace:
@@ -15,15 +25,21 @@ def parse_args() -> argparse.Namespace:
         description="Create a clean set of MRI undersampling deliverables with R=5 variable-density masking."
     )
     parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses the current repo-relative data layout; legacy keeps the original relative defaults.",
+    )
+    parser.add_argument(
         "--input-root",
         type=Path,
-        default=Path("raw_data"),
+        default=None,
         help="Root directory containing original T2w NIfTI files.",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("outputs") / "submission_r5_deliverables",
+        default=None,
         help="Directory where the organized deliverables will be written.",
     )
     parser.add_argument(
@@ -57,6 +73,18 @@ def parse_args() -> argparse.Namespace:
         help="Random seed used for the shared undersampling mask.",
     )
     return parser.parse_args()
+
+
+def resolve_paths(args: argparse.Namespace) -> None:
+    if args.path_profile == "legacy":
+        input_root = LEGACY_INPUT_ROOT
+        output_dir = LEGACY_OUTPUT_DIR
+    else:
+        input_root = LOCAL_INPUT_ROOT
+        output_dir = LOCAL_OUTPUT_DIR
+
+    args.input_root = args.input_root if args.input_root is not None else input_root
+    args.output_dir = args.output_dir if args.output_dir is not None else output_dir
 
 
 def choose_example_cases(t2w_files: list[Path], num_examples: int) -> list[Path]:
@@ -164,6 +192,10 @@ This folder contains organized deliverables for Fourier-domain MRI undersampling
 
 def main() -> None:
     args = parse_args()
+    resolve_paths(args)
+    print(f"Path profile: {args.path_profile}")
+    print(f"Input root  : {args.input_root.resolve()}")
+    print(f"Output dir  : {args.output_dir.resolve()}")
 
     t2w_files = find_t2w_files(args.input_root)
     example_cases = choose_example_cases(t2w_files, args.num_examples)

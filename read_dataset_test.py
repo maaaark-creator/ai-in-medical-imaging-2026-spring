@@ -2,10 +2,14 @@ import argparse
 import gzip
 import os
 import struct
+from pathlib import Path
 from typing import Dict, Tuple
 
 
 EXPECTED_SUFFIXES = ["t1c", "t1n", "t2f", "t2w", "seg"]
+PROJECT_ROOT = Path(__file__).resolve().parent
+LOCAL_DATA_ROOT = PROJECT_ROOT.parent / "archive"
+LEGACY_DATA_ROOT = Path(r"F:\zhujiao\archive")
 
 
 def read_nifti_shape(file_path: str) -> Tuple[int, ...]:
@@ -92,16 +96,25 @@ def main() -> None:
         description="Read all patient folders and print image sizes for 4 images and 1 segmentation."
     )
     parser.add_argument(
+        "--path-profile",
+        choices=["local", "legacy"],
+        default="local",
+        help="local uses ../archive next to the repository; legacy keeps the original F: drive path.",
+    )
+    parser.add_argument(
         "--root",
-        default=r"F:\zhujiao\archive",
+        default=None,
         help="Root directory that contains patient subfolders.",
     )
     args = parser.parse_args()
+    root = Path(args.root) if args.root is not None else (LEGACY_DATA_ROOT if args.path_profile == "legacy" else LOCAL_DATA_ROOT)
 
-    if not os.path.isdir(args.root):
-        raise FileNotFoundError("Directory does not exist: {0}".format(args.root))
+    if not os.path.isdir(root):
+        raise FileNotFoundError("Directory does not exist: {0}".format(root))
 
-    print_results(args.root)
+    print(f"Path profile: {args.path_profile}")
+    print(f"Data root   : {root.resolve()}")
+    print_results(str(root))
 
 
 if __name__ == "__main__":
