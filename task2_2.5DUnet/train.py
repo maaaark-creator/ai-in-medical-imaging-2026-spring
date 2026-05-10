@@ -20,7 +20,9 @@ from config import (
     DEFAULT_EPOCHS,
     DEFAULT_FULLY_SAMPLED_DIR,
     DEFAULT_LR,
+    DEFAULT_NORM_MODE,
     DEFAULT_NUM_WORKERS,
+    DEFAULT_ROBUST_PERCENTILE,
     DEFAULT_SEED,
     DEFAULT_SLICE_FILTER,
     DEFAULT_UNDERSAMPLED_DIR,
@@ -48,6 +50,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--context-slices", type=int, default=DEFAULT_CONTEXT_SLICES)
     parser.add_argument("--slice-filter", choices=["all", "nonzero"], default=DEFAULT_SLICE_FILTER)
     parser.add_argument("--blank-threshold", type=float, default=DEFAULT_BLANK_THRESHOLD)
+    parser.add_argument(
+        "--norm-mode",
+        choices=["separate", "target-volume-robust"],
+        default=DEFAULT_NORM_MODE,
+        help="separate: old per-slice independent min-max; target-volume-robust: input/target share target volume pXX scale.",
+    )
+    parser.add_argument("--robust-percentile", type=float, default=DEFAULT_ROBUST_PERCENTILE)
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     parser.add_argument("--epochs", type=int, default=DEFAULT_EPOCHS)
     parser.add_argument("--lr", type=float, default=DEFAULT_LR)
@@ -58,6 +67,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cache-size", type=int, default=DEFAULT_CACHE_SIZE)
     parser.add_argument("--limit-patients", type=int, default=None)
     parser.add_argument("--base-features", type=int, default=32)
+    parser.add_argument(
+        "--resume",
+        type=Path,
+        default=None,
+        help="Resume from a checkpoint such as last_checkpoint.pth.",
+    )
     return parser.parse_args()
 
 
@@ -98,7 +113,7 @@ def run_epoch(
 
         with torch.set_grad_enabled(is_train):
             if device.type == "cuda":
-                with torch.cuda.amp.autocast():
+                with torch.amp.autocast("cuda"):
                     outputs = model(inputs)
                     loss = criterion(outputs, targets)
             else:
@@ -140,7 +155,9 @@ def main() -> None:
 
     undersampled_dir = expand_path(args.undersampled_dir)
     fully_sampled_dir = expand_path(args.fully_sampled_dir)
-    output_dir = expand_path(args.output_dir or default_output_dir(args.context_slices, args.slice_filter))
+    output_dir = expand_path(
+        args.output_dir or default_output_dir(args.context_slices, args.slice_filter, args.norm_mode)
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -175,6 +192,8 @@ def main() -> None:
         context_slices=args.context_slices,
         slice_filter=args.slice_filter,
         blank_threshold=args.blank_threshold,
+        norm_mode=args.norm_mode,
+        robust_percentile=args.robust_percentile,
         cache_size=args.cache_size,
         desc="Indexing train",
     )
@@ -185,6 +204,8 @@ def main() -> None:
         context_slices=args.context_slices,
         slice_filter=args.slice_filter,
         blank_threshold=args.blank_threshold,
+        norm_mode=args.norm_mode,
+        robust_percentile=args.robust_percentile,
         cache_size=args.cache_size,
         desc="Indexing val",
     )
@@ -195,6 +216,8 @@ def main() -> None:
         context_slices=args.context_slices,
         slice_filter=args.slice_filter,
         blank_threshold=args.blank_threshold,
+        norm_mode=args.norm_mode,
+        robust_percentile=args.robust_percentile,
         cache_size=0,
         desc="Indexing test stats",
     )
@@ -224,13 +247,53 @@ def main() -> None:
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", factor=0.5, patience=2
     )
-    scaler = torch.cuda.amp.GradScaler(enabled=device.type == "cuda")
+    scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
 
     best_loss = float("inf")
     epochs_without_improvement = 0
     history: list[dict[str, float]] = []
+    start_epoch = 1
 
-    for epoch in range(1, args.epochs + 1):
+    if args.resume is not None:
+        resume_path = expand_path(args.resume)
+        checkpoint = torch.load(resume_path, map_location=device)
+        checkpoint_features = tuple(checkpoint.get("features", features))
+        if checkpoint_features != features:
+            raise ValueError(
+                f"Checkpoint features {checkpoint_features} do not match current features {features}. "
+                "Use the same --base-features value as the original run."
+            )
+        model.load_state_dict(checkpoint["model_state"])
+        if "optimizer_state" in checkpoint:
+            optimizer.load_state_dict(checkpoint["optimizer_state"])
+            for group in optimizer.param_groups:
+                group["lr"] = min(float(group["lr"]), args.lr)
+        best_loss = float(checkpoint.get("best_loss", best_loss))
+        start_epoch = int(checkpoint.get("epoch", 0)) + 1
+
+        history_path = output_dir / "history.csv"
+        if history_path.exists():
+            import csv as csv_module
+
+            with history_path.open("r", newline="", encoding="utf-8") as f:
+                history = [
+                    {
+                        "epoch": int(row["epoch"]),
+                        "train_loss": float(row["train_loss"]),
+                        "val_loss": float(row["val_loss"]),
+                        "monitor_loss": float(row["monitor_loss"]),
+                        "lr": float(row["lr"]),
+                        "seconds": float(row["seconds"]),
+                    }
+                    for row in csv_module.DictReader(f)
+                    if int(row["epoch"]) < start_epoch
+                ]
+        print(f"Resumed from {resume_path} at epoch {start_epoch}. Best loss: {best_loss:.8f}")
+
+    if start_epoch > args.epochs:
+        print(f"Checkpoint already reached epoch {start_epoch - 1}; nothing to train.")
+
+    for epoch in range(start_epoch, args.epochs + 1):
         start = time.time()
         train_loss = run_epoch(
             model,

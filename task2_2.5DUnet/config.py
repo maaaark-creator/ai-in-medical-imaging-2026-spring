@@ -22,6 +22,8 @@ TEST_RATIO = 0.2
 DEFAULT_CONTEXT_SLICES = 3
 DEFAULT_SLICE_FILTER = "nonzero"
 DEFAULT_BLANK_THRESHOLD = 0.001
+DEFAULT_NORM_MODE = "separate"
+DEFAULT_ROBUST_PERCENTILE = 99.0
 DEFAULT_BATCH_SIZE = 8
 DEFAULT_EPOCHS = 30
 DEFAULT_LR = 1e-4
@@ -36,8 +38,11 @@ def expand_path(path: Path | str) -> Path:
     return Path(path).expanduser().resolve()
 
 
-def default_output_dir(context_slices: int, slice_filter: str) -> Path:
-    return DEFAULT_OUTPUT_ROOT / f"25d_unet_context{context_slices}_{slice_filter}"
+def default_output_dir(context_slices: int, slice_filter: str, norm_mode: str = DEFAULT_NORM_MODE) -> Path:
+    suffix = f"25d_unet_context{context_slices}_{slice_filter}"
+    if norm_mode != DEFAULT_NORM_MODE:
+        suffix = f"{suffix}_{norm_mode}"
+    return DEFAULT_OUTPUT_ROOT / suffix
 
 
 def set_seed(seed: int) -> None:
@@ -91,10 +96,9 @@ def split_patients(
 def save_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, ensure_ascii=False)
+        json.dump(payload, f, indent=2, ensure_ascii=False, default=str)
 
 
 def load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
-

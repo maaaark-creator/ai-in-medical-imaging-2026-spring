@@ -17,7 +17,9 @@ from config import (
     DEFAULT_CACHE_SIZE,
     DEFAULT_CONTEXT_SLICES,
     DEFAULT_FULLY_SAMPLED_DIR,
+    DEFAULT_NORM_MODE,
     DEFAULT_NUM_WORKERS,
+    DEFAULT_ROBUST_PERCENTILE,
     DEFAULT_SEED,
     DEFAULT_UNDERSAMPLED_DIR,
     default_output_dir,
@@ -46,6 +48,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--context-slices", type=int, default=DEFAULT_CONTEXT_SLICES)
     parser.add_argument("--slice-filter", choices=["all", "nonzero"], default="all")
     parser.add_argument("--blank-threshold", type=float, default=DEFAULT_BLANK_THRESHOLD)
+    parser.add_argument(
+        "--norm-mode",
+        choices=["separate", "target-volume-robust"],
+        default=DEFAULT_NORM_MODE,
+        help="Must match the normalization mode used for training unless loaded from checkpoint config.",
+    )
+    parser.add_argument("--robust-percentile", type=float, default=DEFAULT_ROBUST_PERCENTILE)
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument("--num-workers", type=int, default=DEFAULT_NUM_WORKERS)
@@ -95,7 +104,7 @@ def main() -> None:
     validate_context_slices(args.context_slices)
     set_seed(args.seed)
 
-    output_dir = expand_path(args.output_dir or default_output_dir(args.context_slices, "nonzero"))
+    output_dir = expand_path(args.output_dir or default_output_dir(args.context_slices, "nonzero", args.norm_mode))
     model_path = expand_path(args.model_path or output_dir / "best_unet25d.pth")
     undersampled_dir = expand_path(args.undersampled_dir)
     fully_sampled_dir = expand_path(args.fully_sampled_dir)
@@ -107,6 +116,8 @@ def main() -> None:
     features = tuple(checkpoint.get("features", (32, 64, 128, 256)))
 
     context_slices = int(checkpoint_config.get("context_slices", args.context_slices))
+    norm_mode = checkpoint_config.get("norm_mode", args.norm_mode)
+    robust_percentile = float(checkpoint_config.get("robust_percentile", args.robust_percentile))
     validate_context_slices(context_slices)
     model = UNet25D(in_channels=context_slices, features=features).to(device)
     model.load_state_dict(checkpoint["model_state"])
@@ -136,6 +147,8 @@ def main() -> None:
         context_slices=context_slices,
         slice_filter=args.slice_filter,
         blank_threshold=args.blank_threshold,
+        norm_mode=norm_mode,
+        robust_percentile=robust_percentile,
         cache_size=args.cache_size,
         return_metadata=True,
         desc="Indexing eval",
@@ -237,4 +250,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

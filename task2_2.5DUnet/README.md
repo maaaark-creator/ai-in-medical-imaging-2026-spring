@@ -18,6 +18,19 @@ python train.py --context-slices 3 --slice-filter nonzero --batch-size 8 --epoch
 python evaluate.py --model-path ..\outputs\task2\25d_unet_context3_nonzero\best_unet25d.pth --output-dir ..\outputs\task2\25d_unet_context3_nonzero
 ```
 
+Robust target-volume normalization run:
+
+```powershell
+python train.py --context-slices 3 --slice-filter nonzero --norm-mode target-volume-robust --robust-percentile 99 --batch-size 4 --epochs 30 --num-workers 2
+python evaluate.py --model-path ..\outputs\task2\25d_unet_context3_nonzero_target-volume-robust\best_unet25d.pth --output-dir ..\outputs\task2\25d_unet_context3_nonzero_target-volume-robust --batch-size 8 --num-workers 2
+```
+
+Resume an interrupted run:
+
+```powershell
+python train.py --context-slices 3 --slice-filter nonzero --batch-size 4 --epochs 30 --num-workers 2 --resume ..\outputs\task2\25d_unet_context3_nonzero\last_checkpoint.pth
+```
+
 Use 5 neighboring slices by changing both commands to `--context-slices 5`.
 
 ## Outputs
@@ -41,3 +54,8 @@ target_nonzero_fraction >= 0.001
 
 Evaluation defaults to `--slice-filter all` and reports both all slices and non-blank/tissue slices, so the report stays transparent while the main comparison is not inflated by easy blank slices.
 
+## Normalization
+
+`--norm-mode separate` keeps the original per-slice independent min-max normalization.
+
+`--norm-mode target-volume-robust` uses the fully sampled target volume's nonzero p99 intensity as one shared scale for both undersampled input slices and the target slice, then clips values to `[0, 1]`. This is more rigorous for reconstruction because input and target stay in the same intensity coordinate system.

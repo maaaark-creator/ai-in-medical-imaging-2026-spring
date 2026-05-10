@@ -18,6 +18,7 @@ class PatientRecord:
     undersampled_path: Path
     fully_sampled_path: Path
     num_slices: int
+    norm_scale: float
     total_slices: int
     kept_slices: int
     filtered_slices: int
@@ -48,8 +49,25 @@ def normalize_slice(slice_2d: np.ndarray) -> np.ndarray:
     return np.zeros_like(slice_2d, dtype=np.float32)
 
 
+def normalize_with_scale(slice_2d: np.ndarray, scale: float) -> np.ndarray:
+    slice_2d = np.asarray(slice_2d, dtype=np.float32)
+    if scale <= 0.0:
+        return np.zeros_like(slice_2d, dtype=np.float32)
+    return np.clip(slice_2d / scale, 0.0, 1.0).astype(np.float32)
+
+
 def nonzero_fraction(slice_2d: np.ndarray) -> float:
     return float(np.count_nonzero(slice_2d) / slice_2d.size)
+
+
+def robust_target_scale(volume: np.ndarray, percentile: float) -> float:
+    tissue_values = volume[volume > 0]
+    if tissue_values.size == 0:
+        return 1.0
+    scale = float(np.percentile(tissue_values, percentile))
+    if scale <= 0.0:
+        scale = float(tissue_values.max())
+    return max(scale, 1e-6)
 
 
 class BraTS25DSliceDataset(Dataset):
@@ -61,6 +79,8 @@ class BraTS25DSliceDataset(Dataset):
         context_slices: int = 3,
         slice_filter: str = "nonzero",
         blank_threshold: float = 0.001,
+        norm_mode: str = "separate",
+        robust_percentile: float = 99.0,
         cache_size: int = 2,
         return_metadata: bool = False,
         desc: str = "Building dataset",
@@ -68,6 +88,10 @@ class BraTS25DSliceDataset(Dataset):
         validate_context_slices(context_slices)
         if slice_filter not in {"all", "nonzero"}:
             raise ValueError("--slice-filter must be either 'all' or 'nonzero'.")
+        if norm_mode not in {"separate", "target-volume-robust"}:
+            raise ValueError("--norm-mode must be either 'separate' or 'target-volume-robust'.")
+        if not (0.0 < robust_percentile <= 100.0):
+            raise ValueError("--robust-percentile must be in (0, 100].")
 
         self.patient_ids = patient_ids
         self.undersampled_root = Path(undersampled_root)
@@ -75,6 +99,8 @@ class BraTS25DSliceDataset(Dataset):
         self.context_slices = context_slices
         self.slice_filter = slice_filter
         self.blank_threshold = blank_threshold
+        self.norm_mode = norm_mode
+        self.robust_percentile = robust_percentile
         self.cache_size = max(cache_size, 0)
         self.return_metadata = return_metadata
         self.records: list[PatientRecord] = []
@@ -112,6 +138,11 @@ class BraTS25DSliceDataset(Dataset):
 
             num_slices = min(us_img.shape[2], fs_img.shape[2])
             fs_data = np.asanyarray(fs_img.dataobj)
+            norm_scale = (
+                robust_target_scale(fs_data[:, :, :num_slices], self.robust_percentile)
+                if self.norm_mode == "target-volume-robust"
+                else 1.0
+            )
             patient_idx = len(self.records)
             kept = 0
             filtered = 0
@@ -131,6 +162,7 @@ class BraTS25DSliceDataset(Dataset):
                     undersampled_path=us_path,
                     fully_sampled_path=fs_path,
                     num_slices=num_slices,
+                    norm_scale=norm_scale,
                     total_slices=num_slices,
                     kept_slices=kept,
                     filtered_slices=filtered,
@@ -165,9 +197,15 @@ class BraTS25DSliceDataset(Dataset):
         input_slices = []
         for offset in range(-half, half + 1):
             z = min(max(slice_z + offset, 0), record.num_slices - 1)
-            input_slices.append(normalize_slice(us_vol[:, :, z]))
+            if self.norm_mode == "target-volume-robust":
+                input_slices.append(normalize_with_scale(us_vol[:, :, z], record.norm_scale))
+            else:
+                input_slices.append(normalize_slice(us_vol[:, :, z]))
 
-        target = normalize_slice(fs_vol[:, :, slice_z])
+        if self.norm_mode == "target-volume-robust":
+            target = normalize_with_scale(fs_vol[:, :, slice_z], record.norm_scale)
+        else:
+            target = normalize_slice(fs_vol[:, :, slice_z])
         inputs = torch.from_numpy(np.stack(input_slices, axis=0).astype(np.float32))
         target_tensor = torch.from_numpy(target[None, :, :].astype(np.float32))
 
@@ -200,6 +238,8 @@ class BraTS25DSliceDataset(Dataset):
             "shape_mismatches": self.shape_mismatches,
             "slice_filter": self.slice_filter,
             "blank_threshold": self.blank_threshold,
+            "norm_mode": self.norm_mode,
+            "robust_percentile": self.robust_percentile,
             "total_slices": total,
             "kept_slices": kept,
             "filtered_slices": filtered,
