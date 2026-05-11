@@ -1,4 +1,5 @@
 import argparse
+import csv
 import os
 import random
 import warnings
@@ -7,6 +8,16 @@ import numpy as np
 import nibabel as nib
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from tqdm import tqdm
+from slice_grouping import (
+    DEFAULT_BACKGROUND_PSNR_THRESHOLD,
+    DEFAULT_SLICE_GROUPING,
+    DEFAULT_TARGET_NONZERO_THRESHOLD,
+    SLICE_GROUPING_CHOICES,
+    build_nonblank_mask,
+    default_eval_output_dir,
+    grouping_title,
+    target_nonzero_fraction,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 LEGACY_UNDERSAMPLED_DIR = Path(os.path.expanduser(
@@ -14,14 +25,16 @@ LEGACY_UNDERSAMPLED_DIR = Path(os.path.expanduser(
 ))
 LEGACY_FULLY_SAMPLED_DIR = Path(os.path.expanduser("~/Downloads/dataset/archive"))
 LEGACY_OUTPUT_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables"))
-LOCAL_FULLY_SAMPLED_DIR = PROJECT_ROOT.parent / "archive"
-LOCAL_UNDERSAMPLED_DIR = PROJECT_ROOT / "outputs" / "task1" / "undersampled_raw_data_t2w_r5"
-LOCAL_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "task2" / "unet_baseline"
+LOCAL_DATA_ROOT = PROJECT_ROOT.parent
+LOCAL_FULLY_SAMPLED_DIR = LOCAL_DATA_ROOT / "archive"
+LOCAL_UNDERSAMPLED_DIR = LOCAL_DATA_ROOT / "undersampled_raw_data_t2w_vertical_line_r5"
+LOCAL_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task2"
 
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.1
 RANDOM_SEED = 42
-BACKGROUND_PSNR_THRESH = 56.0
+DEFAULT_NORM_MODE = "target-volume-robust"
+DEFAULT_ROBUST_PERCENTILE = 99.0
 
 
 def expand_path(path: Path) -> Path:
@@ -40,6 +53,31 @@ def parse_args():
     parser.add_argument("--fully-sampled-dir", type=Path, default=None, help="Override fully sampled BraTS root.")
     parser.add_argument("--output-dir", type=Path, default=None, help="Override output directory.")
     parser.add_argument("--seed", type=int, default=RANDOM_SEED)
+    parser.add_argument(
+        "--norm-mode",
+        choices=["separate", "target-volume-robust"],
+        default=DEFAULT_NORM_MODE,
+        help="separate: per-slice min-max; target-volume-robust: input/target share target-volume pXX scale.",
+    )
+    parser.add_argument("--robust-percentile", type=float, default=DEFAULT_ROBUST_PERCENTILE)
+    parser.add_argument(
+        "--slice-grouping",
+        choices=SLICE_GROUPING_CHOICES,
+        default=DEFAULT_SLICE_GROUPING,
+        help="How to define the non-blank/tissue slice subset for reporting.",
+    )
+    parser.add_argument(
+        "--target-nonzero-threshold",
+        type=float,
+        default=DEFAULT_TARGET_NONZERO_THRESHOLD,
+        help="Target-slice nonzero fraction threshold used when --slice-grouping=target_nonzero.",
+    )
+    parser.add_argument(
+        "--background-psnr-threshold",
+        type=float,
+        default=DEFAULT_BACKGROUND_PSNR_THRESHOLD,
+        help="PSNR threshold used when --slice-grouping=psnr_threshold.",
+    )
     return parser.parse_args()
 
 
@@ -47,11 +85,11 @@ def resolve_paths(args):
     if args.path_profile == "legacy":
         undersampled_dir = LEGACY_UNDERSAMPLED_DIR
         fully_sampled_dir = LEGACY_FULLY_SAMPLED_DIR
-        output_dir = LEGACY_OUTPUT_DIR
+        output_dir = default_eval_output_dir(LEGACY_OUTPUT_DIR, args.slice_grouping)
     else:
         undersampled_dir = LOCAL_UNDERSAMPLED_DIR
         fully_sampled_dir = LOCAL_FULLY_SAMPLED_DIR
-        output_dir = LOCAL_OUTPUT_DIR
+        output_dir = default_eval_output_dir(LOCAL_OUTPUT_ROOT, args.slice_grouping)
 
     if args.undersampled_dir is not None:
         undersampled_dir = args.undersampled_dir
@@ -75,11 +113,27 @@ def find_t2w_path(root, patient_id):
     return candidates[0]
 
 
+def robust_target_scale(volume: np.ndarray, percentile: float) -> float:
+    tissue_values = volume[volume > 0]
+    if tissue_values.size == 0:
+        return 1.0
+    scale = float(np.percentile(tissue_values, percentile))
+    if scale <= 0.0:
+        scale = float(tissue_values.max())
+    return max(scale, 1e-6)
+
+
 def norm_slice(s: np.ndarray) -> np.ndarray:
     mn, mx = s.min(), s.max()
     if mx > mn:
-        return (s - mn) / (mx - mn)
-    return np.zeros_like(s)
+        return ((s - mn) / (mx - mn)).astype(np.float32)
+    return np.zeros_like(s, dtype=np.float32)
+
+
+def norm_with_scale(s: np.ndarray, scale: float) -> np.ndarray:
+    if scale <= 0.0:
+        return np.zeros_like(s, dtype=np.float32)
+    return np.clip(s / scale, 0.0, 1.0).astype(np.float32)
 
 
 def compute_psnr_ssim(input_slice, target_slice):
@@ -121,11 +175,14 @@ def main():
     print(f"Undersampled root  : {undersampled_dir}")
     print(f"Fully sampled root : {fully_sampled_dir}")
     print(f"Output dir         : {output_dir}")
+    print(f"Slice grouping     : {args.slice_grouping}")
+    print(f"Norm mode          : {args.norm_mode}")
 
     test_patients = get_test_patients(undersampled_dir, fully_sampled_dir, args.seed)
     print(f"Total test patients: {len(test_patients)}")
 
     psnr_all, ssim_all = [], []
+    target_nonzero_all = []
 
     for pid in tqdm(test_patients, desc="Processing"):
         us_path = find_t2w_path(undersampled_dir, pid)
@@ -139,25 +196,48 @@ def main():
         fs_vol = nib.load(fs_path).get_fdata().astype(np.float32)
 
         num_slices = min(us_vol.shape[2], fs_vol.shape[2])
+        norm_scale = (
+            robust_target_scale(fs_vol[:, :, :num_slices], args.robust_percentile)
+            if args.norm_mode == "target-volume-robust"
+            else 1.0
+        )
         for s in range(num_slices):
-            inp = norm_slice(us_vol[:, :, s])
-            tar = norm_slice(fs_vol[:, :, s])
+            raw_target = fs_vol[:, :, s]
+            if args.norm_mode == "target-volume-robust":
+                inp = norm_with_scale(us_vol[:, :, s], norm_scale)
+                tar = norm_with_scale(raw_target, norm_scale)
+            else:
+                inp = norm_slice(us_vol[:, :, s])
+                tar = norm_slice(raw_target)
 
             psnr_val, ssim_val = compute_psnr_ssim(inp, tar)
             psnr_all.append(psnr_val)
             ssim_all.append(ssim_val)
+            target_nonzero_all.append(target_nonzero_fraction(raw_target))
 
     psnr_all = np.array(psnr_all)
     ssim_all = np.array(ssim_all)
+    target_nonzero_all = np.array(target_nonzero_all)
 
     avg_psnr_full = np.mean(psnr_all)
     avg_ssim_full = np.mean(ssim_all)
 
-    tissue_mask = psnr_all <= BACKGROUND_PSNR_THRESH
-    psnr_tissue = psnr_all[tissue_mask]
-    ssim_tissue = ssim_all[tissue_mask]
-    avg_psnr_tissue = np.mean(psnr_tissue) if len(psnr_tissue) > 0 else 0.0
-    avg_ssim_tissue = np.mean(ssim_tissue) if len(ssim_tissue) > 0 else 0.0
+    nonblank_mask = build_nonblank_mask(
+        psnr_all,
+        target_nonzero_all,
+        args.slice_grouping,
+        args.target_nonzero_threshold,
+        args.background_psnr_threshold,
+    )
+    psnr_nonblank = psnr_all[nonblank_mask]
+    ssim_nonblank = ssim_all[nonblank_mask]
+    avg_psnr_nonblank = np.mean(psnr_nonblank) if len(psnr_nonblank) > 0 else 0.0
+    avg_ssim_nonblank = np.mean(ssim_nonblank) if len(ssim_nonblank) > 0 else 0.0
+    nonblank_title = grouping_title(
+        args.slice_grouping,
+        args.target_nonzero_threshold,
+        args.background_psnr_threshold,
+    )
 
     print(f"\n{'='*50}")
     print(f"Total slices: {len(psnr_all)}")
@@ -165,7 +245,8 @@ def main():
         f"All slices        -> PSNR: {avg_psnr_full:.4f} dB, SSIM: {avg_ssim_full:.4f}"
     )
     print(
-        f"Tissue slices ({np.sum(tissue_mask)}) -> PSNR: {avg_psnr_tissue:.4f} dB, SSIM: {avg_ssim_tissue:.4f}"
+        f"{nonblank_title} ({np.sum(nonblank_mask)}) -> "
+        f"PSNR: {avg_psnr_nonblank:.4f} dB, SSIM: {avg_ssim_nonblank:.4f}"
     )
 
     out_path = output_dir / "metrics_before_recon.txt"
@@ -175,16 +256,50 @@ def main():
         f.write("All slices:\n")
         f.write(f"  PSNR mean: {avg_psnr_full:.6f} dB\n")
         f.write(f"  SSIM mean: {avg_ssim_full:.6f}\n\n")
-        f.write(f"Tissue slices (PSNR <= {BACKGROUND_PSNR_THRESH} dB):\n")
-        f.write(f"  Count    : {len(psnr_tissue)}\n")
-        f.write(f"  PSNR mean: {avg_psnr_tissue:.6f} dB\n")
-        f.write(f"  SSIM mean: {avg_ssim_tissue:.6f}\n\n")
+        f.write(f"{nonblank_title}:\n")
+        f.write(f"  Count    : {len(psnr_nonblank)}\n")
+        if args.slice_grouping == "target_nonzero":
+            f.write(
+                "  Definition: "
+                f"target_nonzero_fraction >= {args.target_nonzero_threshold:g}\n"
+            )
+        else:
+            f.write(
+                "  Definition: "
+                f"PSNR <= {args.background_psnr_threshold:g} dB\n"
+            )
+        f.write(f"  PSNR mean: {avg_psnr_nonblank:.6f} dB\n")
+        f.write(f"  SSIM mean: {avg_ssim_nonblank:.6f}\n\n")
         f.write(
             "Per-slice PSNR (all):\n" + ", ".join(f"{v:.6f}" for v in psnr_all) + "\n"
         )
         f.write(
             "Per-slice SSIM (all):\n" + ", ".join(f"{v:.6f}" for v in ssim_all) + "\n"
         )
+        f.write(
+            "Per-slice target_nonzero_fraction (all):\n"
+            + ", ".join(f"{v:.6f}" for v in target_nonzero_all)
+            + "\n"
+        )
+
+    csv_path = output_dir / "before_recon_per_slice_metrics.csv"
+    with open(csv_path, "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(
+            [
+                "Index",
+                "PSNR_dB",
+                "SSIM",
+                "target_nonzero_fraction",
+                "selected_by_grouping",
+            ]
+        )
+        for idx, (psnr_val, ssim_val, frac, keep) in enumerate(
+            zip(psnr_all, ssim_all, target_nonzero_all, nonblank_mask)
+        ):
+            writer.writerow(
+                [idx, f"{psnr_val:.6f}", f"{ssim_val:.6f}", f"{frac:.6f}", int(keep)]
+            )
 
     print(f"Results saved to {out_path}")
 

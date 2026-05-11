@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from mask import find_t2w_files, generate_variable_density_mask, ifft2c, load_volume
+from mask import find_t2w_files, generate_mask, ifft2c, load_volume, mask_display_name, mask_file_stem
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
@@ -72,6 +72,12 @@ def parse_args() -> argparse.Namespace:
         default=42,
         help="Random seed used for the shared undersampling mask.",
     )
+    parser.add_argument(
+        "--mask-type",
+        choices=["variable_density_2d", "vertical_line"],
+        default="vertical_line",
+        help="Sampling pattern. vertical_line keeps complete k-space columns for Cartesian line undersampling.",
+    )
     return parser.parse_args()
 
 
@@ -112,10 +118,10 @@ def normalize_vmax(image: np.ndarray) -> float:
     return vmax if vmax > 0 else 1.0
 
 
-def save_mask(mask: np.ndarray, output_path: Path, acceleration: float) -> None:
+def save_mask(mask: np.ndarray, output_path: Path, acceleration: float, mask_type: str) -> None:
     fig, ax = plt.subplots(figsize=(5.5, 5.5))
     ax.imshow(mask.T, cmap="gray", origin="lower")
-    ax.set_title(f"Random Variable-Density Mask (R~{acceleration:.2f})")
+    ax.set_title(f"{mask_display_name(mask_type)} (R~{acceleration:.2f})")
     ax.axis("off")
     fig.tight_layout()
     fig.savefig(output_path, dpi=180, bbox_inches="tight")
@@ -168,16 +174,18 @@ def write_readme(
     acceleration: float,
     achieved_acceleration: float,
     manifest_rel_path: str,
+    mask_type: str,
 ) -> None:
     readme_path = output_dir / "README.md"
     readme_text = f"""# MRI Undersampling Deliverables
 
-This folder contains organized deliverables for Fourier-domain MRI undersampling with a random variable-density mask.
+This folder contains organized deliverables for Fourier-domain MRI undersampling with a {mask_display_name(mask_type)}.
 
 ## Settings
 
 - Target acceleration factor: `R={acceleration:.1f}`
-- Achieved acceleration of the shared 2D mask: `R~{achieved_acceleration:.4f}`
+- Achieved acceleration of the shared mask: `R~{achieved_acceleration:.4f}`
+- Mask type: `{mask_type}`
 - Number of exported examples: `{num_examples}`
 
 ## Folder layout
@@ -205,12 +213,13 @@ def main() -> None:
     sample_slice = sample_volume[:, :, sample_slice_index]
 
     rng = np.random.default_rng(args.seed)
-    mask, achieved_acceleration = generate_variable_density_mask(
+    mask, achieved_acceleration = generate_mask(
         shape=sample_slice.shape,
         acceleration=args.acceleration,
         center_fraction=args.center_fraction,
         sigma=args.sigma,
         rng=rng,
+        mask_type=args.mask_type,
     )
 
     mask_dir = args.output_dir / "01_mask"
@@ -219,8 +228,9 @@ def main() -> None:
     for directory in (mask_dir, comparison_dir, pair_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
-    np.save(mask_dir / "variable_density_mask_r5.npy", mask)
-    save_mask(mask, mask_dir / "variable_density_mask_r5.png", achieved_acceleration)
+    mask_stem = mask_file_stem(args.mask_type, args.acceleration, args.seed)
+    np.save(mask_dir / f"{mask_stem}.npy", mask)
+    save_mask(mask, mask_dir / f"{mask_stem}.png", achieved_acceleration, args.mask_type)
 
     manifest_path = args.output_dir / "examples_manifest.csv"
     with manifest_path.open("w", newline="", encoding="utf-8") as csv_file:
@@ -251,12 +261,14 @@ def main() -> None:
         acceleration=args.acceleration,
         achieved_acceleration=achieved_acceleration,
         manifest_rel_path=manifest_path.name,
+        mask_type=args.mask_type,
     )
 
     print(f"Saved deliverables to: {args.output_dir.resolve()}")
     print(f"Examples exported: {len(example_cases)}")
     print(f"Achieved acceleration: {achieved_acceleration:.4f}")
-    print(f"Mask: {(mask_dir / 'variable_density_mask_r5.png').resolve()}")
+    print(f"Mask type: {args.mask_type}")
+    print(f"Mask: {(mask_dir / f'{mask_stem}.png').resolve()}")
     print(f"Comparisons: {comparison_dir.resolve()}")
     print(f"Pairs: {pair_dir.resolve()}")
 

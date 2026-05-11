@@ -15,27 +15,27 @@ Full GPU run:
 
 ```powershell
 python train.py --context-slices 3 --slice-filter nonzero --batch-size 8 --epochs 30
-python evaluate.py --model-path ..\outputs\task2\25d_unet_context3_nonzero\best_unet25d.pth --output-dir ..\outputs\task2\25d_unet_context3_nonzero
+python evaluate.py --model-path ..\outputs\task2\final_25d_unet_ctx3_nonzero_full\best_unet25d.pth --output-dir ..\outputs\task2\final_25d_unet_ctx3_nonzero_full
 ```
 
 Robust target-volume normalization run:
 
 ```powershell
 python train.py --context-slices 3 --slice-filter nonzero --norm-mode target-volume-robust --robust-percentile 99 --batch-size 4 --epochs 30 --num-workers 2
-python evaluate.py --model-path ..\outputs\task2\25d_unet_context3_nonzero_target-volume-robust\best_unet25d.pth --output-dir ..\outputs\task2\25d_unet_context3_nonzero_target-volume-robust --batch-size 8 --num-workers 2
+python evaluate.py --model-path ..\outputs\task2\exp_25d_unet_ctx3_nonzero_target-volume-robust\best_unet25d.pth --output-dir ..\outputs\task2\exp_25d_unet_ctx3_nonzero_target-volume-robust --batch-size 8 --num-workers 2
 ```
 
 Resume an interrupted run:
 
 ```powershell
-python train.py --context-slices 3 --slice-filter nonzero --batch-size 4 --epochs 30 --num-workers 2 --resume ..\outputs\task2\25d_unet_context3_nonzero\last_checkpoint.pth
+python train.py --context-slices 3 --slice-filter nonzero --batch-size 4 --epochs 30 --num-workers 2 --resume ..\outputs\task2\final_25d_unet_ctx3_nonzero_full\last_checkpoint.pth
 ```
 
 Use 5 neighboring slices by changing both commands to `--context-slices 5`.
 
 ## Outputs
 
-Main outputs are written to `outputs/task2/25d_unet_context3_nonzero` by default:
+Main outputs are written to `outputs/task2/final_25d_unet_ctx3_nonzero_full` by default:
 
 - `best_unet25d.pth`: best checkpoint by validation loss.
 - `history.csv`, `loss_curve.png`, `lr_curve.png`: training monitoring.

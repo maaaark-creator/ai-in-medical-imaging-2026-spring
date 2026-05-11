@@ -12,25 +12,10 @@ os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
 
 import matplotlib.pyplot as plt
 
-LOCAL_INPUT_ROOT = PROJECT_ROOT.parent / "archive"
-LOCAL_KSPACE_ROOT = PROJECT_ROOT / "outputs" / "task1" / "kspace_t2w_slicewise_fft"
-LOCAL_PREVIEW_DIR = PROJECT_ROOT / "outputs" / "task1" / "undersampling_preview"
-LOCAL_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task1" / "undersampled_raw_data_t2w_r5"
-LEGACY_INPUT_ROOT = Path("raw_data")
-LEGACY_KSPACE_ROOT = Path("kspace_t2w_slicewise_fft")
-LEGACY_PREVIEW_DIR = Path("outputs") / "undersampling_preview"
-LEGACY_OUTPUT_ROOT = Path("undersampled_raw_data_t2w_r5")
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Preview or batch-generate random variable-density undersampled T2w reconstructions."
-    )
-    parser.add_argument(
-        "--path-profile",
-        choices=["local", "legacy"],
-        default="local",
-        help="local uses the current repo-relative data layout; legacy keeps the original relative defaults.",
     )
     parser.add_argument(
         "--mode",
@@ -41,25 +26,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--input-root",
         type=Path,
-        default=None,
+        default=Path("raw_data"),
         help="Root directory containing BraTS case folders and original T2w NIfTI files.",
     )
     parser.add_argument(
         "--kspace-root",
         type=Path,
-        default=None,
+        default=Path("kspace_t2w_slicewise_fft"),
         help="Root directory containing precomputed slice-wise centered complex k-space .npz files.",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=None,
+        default=Path("outputs") / "undersampling_preview",
         help="Directory used for preview figures.",
     )
     parser.add_argument(
         "--output-root",
         type=Path,
-        default=None,
+        default=Path("undersampled_raw_data_t2w_r5"),
         help="Batch output root. Folder structure mirrors raw_data, but each case folder stores only undersampled T2w.",
     )
     parser.add_argument(
@@ -93,6 +78,12 @@ def parse_args() -> argparse.Namespace:
         help="Target acceleration factor R. R=5 means about 20%% k-space samples are kept.",
     )
     parser.add_argument(
+        "--mask-type",
+        choices=["variable_density_2d", "vertical_line"],
+        default="vertical_line",
+        help="Sampling pattern. vertical_line keeps full k-space columns to form a stripe-like 2D mask.",
+    )
+    parser.add_argument(
         "--center-fraction",
         type=float,
         default=0.10,
@@ -116,24 +107,6 @@ def parse_args() -> argparse.Namespace:
         help="In batch mode, also save one preview figure for the first processed case.",
     )
     return parser.parse_args()
-
-
-def resolve_paths(args: argparse.Namespace) -> None:
-    if args.path_profile == "legacy":
-        input_root = LEGACY_INPUT_ROOT
-        kspace_root = LEGACY_KSPACE_ROOT
-        output_dir = LEGACY_PREVIEW_DIR
-        output_root = LEGACY_OUTPUT_ROOT
-    else:
-        input_root = LOCAL_INPUT_ROOT
-        kspace_root = LOCAL_KSPACE_ROOT
-        output_dir = LOCAL_PREVIEW_DIR
-        output_root = LOCAL_OUTPUT_ROOT
-
-    args.input_root = args.input_root if args.input_root is not None else input_root
-    args.kspace_root = args.kspace_root if args.kspace_root is not None else kspace_root
-    args.output_dir = args.output_dir if args.output_dir is not None else output_dir
-    args.output_root = args.output_root if args.output_root is not None else output_root
 
 
 def find_t2w_files(input_root: Path) -> list[Path]:
@@ -239,12 +212,102 @@ def generate_variable_density_mask(
     return mask.astype(np.float32), achieved_acceleration
 
 
-def save_mask_preview(mask: np.ndarray, output_path: Path, acceleration: float) -> None:
+def generate_vertical_line_mask(
+    shape: tuple[int, int],
+    acceleration: float,
+    center_fraction: float,
+    sigma: float,
+    rng: np.random.Generator,
+) -> tuple[np.ndarray, float]:
+    if acceleration <= 1.0:
+        raise ValueError("Acceleration must be greater than 1.0 for undersampling.")
+    if not (0.0 < center_fraction < 1.0):
+        raise ValueError("center_fraction must be between 0 and 1.")
+    if sigma <= 0.0:
+        raise ValueError("sigma must be positive.")
+
+    height, width = shape
+    target_columns = int(round(width / acceleration))
+    if target_columns <= 0:
+        raise ValueError("Acceleration is too large for the current image shape.")
+
+    mask = np.zeros((height, width), dtype=bool)
+
+    center_columns = max(4, int(round(width * center_fraction)))
+    col_start = (width - center_columns) // 2
+    col_end = col_start + center_columns
+    mask[:, col_start:col_end] = True
+
+    already_sampled = int(mask[0, :].sum())
+    if already_sampled > target_columns:
+        raise ValueError(
+            "The fully sampled center columns are larger than the allowed sample budget. "
+            "Reduce center_fraction or acceleration."
+        )
+
+    col_coords = np.arange(width, dtype=np.float32)
+    col_coords = (col_coords - (width - 1) / 2.0) / (width / 2.0)
+    density = np.exp(-(col_coords**2) / (2.0 * sigma**2)) + 0.01
+    density[col_start:col_end] = 0.0
+
+    remaining = target_columns - already_sampled
+    if remaining > 0:
+        chosen_columns = rng.choice(
+            width,
+            size=remaining,
+            replace=False,
+            p=density / density.sum(),
+        )
+        mask[:, chosen_columns] = True
+
+    achieved_acceleration = (height * width) / float(mask.sum())
+    return mask.astype(np.float32), achieved_acceleration
+
+
+def generate_mask(
+    shape: tuple[int, int],
+    acceleration: float,
+    center_fraction: float,
+    sigma: float,
+    rng: np.random.Generator,
+    mask_type: str,
+) -> tuple[np.ndarray, float]:
+    if mask_type == "variable_density_2d":
+        return generate_variable_density_mask(
+            shape=shape,
+            acceleration=acceleration,
+            center_fraction=center_fraction,
+            sigma=sigma,
+            rng=rng,
+        )
+    if mask_type == "vertical_line":
+        return generate_vertical_line_mask(
+            shape=shape,
+            acceleration=acceleration,
+            center_fraction=center_fraction,
+            sigma=sigma,
+            rng=rng,
+        )
+    raise ValueError(f"Unsupported mask type: {mask_type}")
+
+
+def mask_display_name(mask_type: str) -> str:
+    if mask_type == "vertical_line":
+        return "Vertical-Line Random Mask"
+    return "Random Variable-Density Mask"
+
+
+def mask_file_stem(mask_type: str, acceleration: float, seed: int) -> str:
+    acceleration_label = str(int(acceleration)) if float(acceleration).is_integer() else str(acceleration).replace(".", "p")
+    return f"{mask_type}_mask_r{acceleration_label}_seed{seed}"
+
+
+def save_mask_preview(mask: np.ndarray, output_path: Path, acceleration: float, mask_type: str) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     fig, ax = plt.subplots(figsize=(5.5, 5.5))
-    ax.imshow(mask.T, cmap="gray", origin="lower")
-    ax.set_title(f"Random Variable-Density Mask (R~{acceleration:.2f})")
+    ax.imshow(mask, cmap="gray", origin="lower", aspect="auto")
+    ax.set_title(f"{mask_display_name(mask_type)} (R~{acceleration:.2f})")
     ax.axis("off")
     fig.tight_layout()
     fig.savefig(output_path, dpi=180, bbox_inches="tight")
@@ -259,14 +322,15 @@ def save_comparison_figure(
     case_name: str,
     slice_index: int,
     acceleration: float,
+    mask_type: str,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     vmax = float(np.percentile(full_image, 99.5))
 
     fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.8))
-    axes[0].imshow(mask.T, cmap="gray", origin="lower")
-    axes[0].set_title(f"Sampling Mask\nR~{acceleration:.2f}")
+    axes[0].imshow(mask, cmap="gray", origin="lower", aspect="auto")
+    axes[0].set_title(f"{mask_display_name(mask_type)}\nR~{acceleration:.2f}")
     axes[0].axis("off")
 
     axes[1].imshow(full_image.T, cmap="gray", origin="lower", vmin=0.0, vmax=vmax)
@@ -310,18 +374,20 @@ def reconstruct_volume_from_kspace(
     center_fraction: float,
     sigma: float,
     rng: np.random.Generator,
+    mask_type: str,
 ) -> tuple[np.ndarray, np.ndarray, float]:
     reconstructed = np.zeros(kspace_volume.shape, dtype=np.float32)
     sampled_fraction_sum = 0.0
     first_mask: np.ndarray | None = None
 
     for slice_idx in range(kspace_volume.shape[2]):
-        mask, _ = generate_variable_density_mask(
+        mask, _ = generate_mask(
             shape=kspace_volume.shape[:2],
             acceleration=acceleration,
             center_fraction=center_fraction,
             sigma=sigma,
             rng=rng,
+            mask_type=mask_type,
         )
         undersampled_kspace = kspace_volume[:, :, slice_idx] * mask
         reconstructed[:, :, slice_idx] = np.abs(ifft2c(undersampled_kspace)).astype(np.float32)
@@ -352,23 +418,25 @@ def run_preview(args: argparse.Namespace) -> None:
     full_slice = volume[:, :, slice_index]
     full_kspace = np.fft.fftshift(np.fft.fft2(full_slice))
 
-    mask, achieved_acceleration = generate_variable_density_mask(
+    mask, achieved_acceleration = generate_mask(
         shape=full_slice.shape,
         acceleration=args.acceleration,
         center_fraction=args.center_fraction,
         sigma=args.sigma,
         rng=rng,
+        mask_type=args.mask_type,
     )
 
     undersampled_kspace = full_kspace * mask
     aliased_slice = np.abs(ifft2c(undersampled_kspace)).astype(np.float32)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    mask_path = args.output_dir / "variable_density_mask_r5_preview.png"
-    comparison_path = args.output_dir / f"{selected_path.stem}_slice_{slice_index:03d}_undersampling_preview.png"
-    mask_array_path = args.output_dir / "variable_density_mask_r5.npy"
+    mask_stem = mask_file_stem(args.mask_type, args.acceleration, args.seed)
+    mask_path = args.output_dir / f"{mask_stem}_preview.png"
+    comparison_path = args.output_dir / f"{selected_path.stem}_slice_{slice_index:03d}_{args.mask_type}_preview.png"
+    mask_array_path = args.output_dir / f"{mask_stem}.npy"
 
-    save_mask_preview(mask, mask_path, achieved_acceleration)
+    save_mask_preview(mask, mask_path, achieved_acceleration, args.mask_type)
     save_comparison_figure(
         full_image=full_slice,
         mask=mask,
@@ -377,6 +445,7 @@ def run_preview(args: argparse.Namespace) -> None:
         case_name=selected_path.parent.name,
         slice_index=slice_index,
         acceleration=achieved_acceleration,
+        mask_type=args.mask_type,
     )
     np.save(mask_array_path, mask)
 
@@ -384,6 +453,8 @@ def run_preview(args: argparse.Namespace) -> None:
     print(f"Volume shape: {volume.shape}")
     print(f"Selected slice index: {slice_index}")
     print(f"2D slice shape: {full_slice.shape}")
+    print(f"Mask type: {args.mask_type}")
+    print(f"Random seed: {args.seed}")
     print(f"Target acceleration: {args.acceleration:.2f}")
     print(f"Achieved acceleration: {achieved_acceleration:.4f}")
     print(f"Mask sampled fraction: {mask.mean():.4f}")
@@ -429,6 +500,7 @@ def run_batch(args: argparse.Namespace) -> None:
             center_fraction=args.center_fraction,
             sigma=args.sigma,
             rng=rng,
+            mask_type=args.mask_type,
         )
         save_reconstructed_t2w(reconstructed_volume, original_t2w_path, output_t2w_path)
 
@@ -450,6 +522,7 @@ def run_batch(args: argparse.Namespace) -> None:
                 case_name=case_id,
                 slice_index=preview_slice_index,
                 acceleration=achieved_acceleration,
+                mask_type=args.mask_type,
             )
             first_preview_saved = True
 
@@ -461,12 +534,6 @@ def run_batch(args: argparse.Namespace) -> None:
 
 def main() -> None:
     args = parse_args()
-    resolve_paths(args)
-    print(f"Path profile: {args.path_profile}")
-    print(f"Input root  : {args.input_root.resolve()}")
-    print(f"K-space root: {args.kspace_root.resolve()}")
-    print(f"Preview dir : {args.output_dir.resolve()}")
-    print(f"Output root : {args.output_root.resolve()}")
     if args.mode == "preview":
         run_preview(args)
     else:

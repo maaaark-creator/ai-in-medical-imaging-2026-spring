@@ -1,0 +1,38 @@
+[
+  {
+    "method":"Input \/ before recon",
+    "tissue_psnr":28.5438,
+    "tissue_ssim":0.721,
+    "psnr_gain":null,
+    "ssim_gain":null,
+    "all_psnr":36.1106,
+    "all_ssim":0.7522
+  },
+  {
+    "method":"2D U-Net",
+    "tissue_psnr":36.3648,
+    "tissue_ssim":0.9732,
+    "psnr_gain":7.8211,
+    "ssim_gain":0.2522,
+    "all_psnr":40.4945,
+    "all_ssim":0.9762
+  },
+  {
+    "method":"2.5D U-Net",
+    "tissue_psnr":35.3798,
+    "tissue_ssim":0.9777,
+    "psnr_gain":6.8361,
+    "ssim_gain":0.2566,
+    "all_psnr":39.7442,
+    "all_ssim":0.8767
+  },
+  {
+    "method":"2.5D Residual ResNet",
+    "tissue_psnr":38.7047,
+    "tissue_ssim":0.9814,
+    "psnr_gain":10.161,
+    "ssim_gain":0.2603,
+    "all_psnr":43.3371,
+    "all_ssim":0.88
+  }
+]

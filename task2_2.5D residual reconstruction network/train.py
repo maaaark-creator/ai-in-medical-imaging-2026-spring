@@ -25,6 +25,7 @@ from config import (
     DEFAULT_NORMALIZATION,
     DEFAULT_NUM_BLOCKS,
     DEFAULT_NUM_WORKERS,
+    DEFAULT_ROBUST_PERCENTILE,
     DEFAULT_SEED,
     DEFAULT_SLICE_FILTER,
     DEFAULT_UNDERSAMPLED_DIR,
@@ -53,6 +54,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--context-slices", type=int, default=DEFAULT_CONTEXT_SLICES)
     parser.add_argument("--slice-filter", choices=["all", "nonzero"], default=DEFAULT_SLICE_FILTER)
     parser.add_argument("--normalization", choices=["independent", "shared"], default=DEFAULT_NORMALIZATION)
+    parser.add_argument("--robust-percentile", type=float, default=DEFAULT_ROBUST_PERCENTILE)
     parser.add_argument("--blank-threshold", type=float, default=DEFAULT_BLANK_THRESHOLD)
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     parser.add_argument("--epochs", type=int, default=DEFAULT_EPOCHS)
@@ -162,6 +164,7 @@ def main() -> None:
     print(f"Fully sampled root : {fully_sampled_dir}")
     print(f"Output dir         : {output_dir}")
     print(f"Normalization      : {args.normalization}")
+    print(f"Robust percentile  : {args.robust_percentile}")
 
     common_patients = list_common_patients(undersampled_dir, fully_sampled_dir)
     split = split_patients(common_patients, seed=args.seed, limit_patients=args.limit_patients)
@@ -190,6 +193,7 @@ def main() -> None:
         context_slices=args.context_slices,
         slice_filter=args.slice_filter,
         normalization=args.normalization,
+        robust_percentile=args.robust_percentile,
         blank_threshold=args.blank_threshold,
         cache_size=args.cache_size,
         desc="Indexing train",
@@ -201,6 +205,7 @@ def main() -> None:
         context_slices=args.context_slices,
         slice_filter=args.slice_filter,
         normalization=args.normalization,
+        robust_percentile=args.robust_percentile,
         blank_threshold=args.blank_threshold,
         cache_size=args.cache_size,
         desc="Indexing val",
@@ -212,6 +217,7 @@ def main() -> None:
         context_slices=args.context_slices,
         slice_filter=args.slice_filter,
         normalization=args.normalization,
+        robust_percentile=args.robust_percentile,
         blank_threshold=args.blank_threshold,
         cache_size=0,
         desc="Indexing test stats",
