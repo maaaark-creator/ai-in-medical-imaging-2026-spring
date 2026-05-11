@@ -39,7 +39,14 @@ def expand_path(path: Path | str) -> Path:
 
 
 def default_output_dir(context_slices: int, slice_filter: str, norm_mode: str = DEFAULT_NORM_MODE) -> Path:
-    suffix = f"25d_unet_context{context_slices}_{slice_filter}"
+    if (
+        context_slices == DEFAULT_CONTEXT_SLICES
+        and slice_filter == DEFAULT_SLICE_FILTER
+        and norm_mode == DEFAULT_NORM_MODE
+    ):
+        return DEFAULT_OUTPUT_ROOT / "final_25d_unet_ctx3_nonzero_full"
+
+    suffix = f"exp_25d_unet_ctx{context_slices}_{slice_filter}"
     if norm_mode != DEFAULT_NORM_MODE:
         suffix = f"{suffix}_{norm_mode}"
     return DEFAULT_OUTPUT_ROOT / suffix

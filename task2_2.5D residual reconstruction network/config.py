@@ -41,7 +41,7 @@ def expand_path(path: Path | str) -> Path:
 
 
 def default_output_dir(context_slices: int, slice_filter: str, normalization: str) -> Path:
-    return DEFAULT_OUTPUT_ROOT / f"25d_resnet_context{context_slices}_{slice_filter}_{normalization}"
+    return DEFAULT_OUTPUT_ROOT / f"exp_25d_resnet_ctx{context_slices}_{slice_filter}_{normalization}_train"
 
 
 def parse_dilations(value: str) -> tuple[int, ...]:

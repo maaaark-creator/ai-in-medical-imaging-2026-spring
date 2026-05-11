@@ -16,14 +16,20 @@ Experiment A reproduces the existing per-slice independent normalization style:
 
 ```powershell
 python train.py --normalization independent --context-slices 3 --slice-filter nonzero --batch-size 4 --epochs 30
-python evaluate.py --normalization independent --model-path ..\outputs\task2\25d_resnet_context3_nonzero_independent\best_resnet25d.pth --output-dir ..\outputs\task2\25d_resnet_context3_nonzero_independent
+python evaluate.py --normalization independent --model-path ..\outputs\task2\exp_25d_resnet_ctx3_nonzero_independent_train\best_resnet25d.pth --output-dir ..\outputs\task2\exp_25d_resnet_ctx3_nonzero_independent_train
 ```
 
 Experiment B uses shared normalization from the fully sampled T2 volume:
 
 ```powershell
 python train.py --normalization shared --context-slices 3 --slice-filter nonzero --batch-size 4 --epochs 30
-python evaluate.py --normalization shared --model-path ..\outputs\task2\25d_resnet_context3_nonzero_shared\best_resnet25d.pth --output-dir ..\outputs\task2\25d_resnet_context3_nonzero_shared
+python evaluate.py --normalization shared --model-path ..\outputs\task2\exp_25d_resnet_ctx3_nonzero_shared_train\best_resnet25d.pth --output-dir ..\outputs\task2\exp_25d_resnet_ctx3_nonzero_shared_train
+```
+
+If another training job is still running and you want a safer one-click evaluation after it finishes:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\run_shared_eval.ps1 -WaitForNoPython
 ```
 
 ## Smoke Tests

@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import random
 from pathlib import Path
@@ -9,8 +10,8 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import nibabel as nib
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
-from collections import defaultdict
 from tqdm import tqdm
+from slice_grouping import DEFAULT_TARGET_NONZERO_THRESHOLD, target_nonzero_fraction
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
@@ -22,9 +23,10 @@ LEGACY_UNDERSAMPLED_DIR = Path(os.path.expanduser(
 ))
 LEGACY_FULLY_SAMPLED_DIR = Path(os.path.expanduser("~/Downloads/dataset/archive"))
 LEGACY_OUTPUT_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables"))
-LOCAL_FULLY_SAMPLED_DIR = PROJECT_ROOT.parent / "archive"
-LOCAL_UNDERSAMPLED_DIR = PROJECT_ROOT / "outputs" / "task1" / "undersampled_raw_data_t2w_r5"
-LOCAL_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "task2" / "unet_baseline"
+LOCAL_DATA_ROOT = PROJECT_ROOT.parent
+LOCAL_FULLY_SAMPLED_DIR = LOCAL_DATA_ROOT / "archive"
+LOCAL_UNDERSAMPLED_DIR = LOCAL_DATA_ROOT / "undersampled_raw_data_t2w_r5"
+LOCAL_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task2"
 
 BATCH_SIZE = 16
 NUM_EPOCHS = 20
@@ -42,6 +44,17 @@ print(f"Using device: {device}")
 def expand_path(path: Path) -> Path:
     return Path(os.path.expanduser(str(path))).resolve()
 
+
+def default_train_output_dir(slice_filter: str) -> Path:
+    suffix = "all" if slice_filter == "all" else "nonzero"
+    return LOCAL_OUTPUT_ROOT / f"baseline_2d_unet_{suffix}_train"
+
+
+def save_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Train a 2D U-Net baseline for undersampled T2w reconstruction.")
     parser.add_argument(
@@ -58,6 +71,18 @@ def parse_args():
     parser.add_argument("--learning-rate", type=float, default=LEARNING_RATE)
     parser.add_argument("--num-workers", type=int, default=NUM_WORKERS)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--slice-filter",
+        choices=["all", "nonzero"],
+        default="all",
+        help="Training/validation slice selection strategy. Test-time evaluation inside this script still uses all slices.",
+    )
+    parser.add_argument(
+        "--target-nonzero-threshold",
+        type=float,
+        default=DEFAULT_TARGET_NONZERO_THRESHOLD,
+        help="Target nonzero fraction threshold used when --slice-filter=nonzero.",
+    )
     return parser.parse_args()
 
 def resolve_paths(args):
@@ -68,7 +93,7 @@ def resolve_paths(args):
     else:
         undersampled_dir = LOCAL_UNDERSAMPLED_DIR
         fully_sampled_dir = LOCAL_FULLY_SAMPLED_DIR
-        output_dir = LOCAL_OUTPUT_DIR
+        output_dir = default_train_output_dir(args.slice_filter)
 
     if args.undersampled_dir is not None:
         undersampled_dir = args.undersampled_dir
@@ -91,9 +116,20 @@ def find_t2w_path(root, patient_id):
     return candidates[0]
 
 class BraTSSliceDataset(Dataset):
-    def __init__(self, patient_list, undersampled_root, fully_sampled_root):
+    def __init__(
+        self,
+        patient_list,
+        undersampled_root,
+        fully_sampled_root,
+        slice_filter="all",
+        target_nonzero_threshold=DEFAULT_TARGET_NONZERO_THRESHOLD,
+    ):
         self.volumes = []
         self.slice_index = []
+        self.slice_filter = slice_filter
+        self.target_nonzero_threshold = target_nonzero_threshold
+        self.total_slices = 0
+        self.kept_slices = 0
         print("Loading volumes (strict pairing)...")
         for pid in tqdm(patient_list, desc="Loading patients"):
             us_path = find_t2w_path(undersampled_root, pid)
@@ -114,9 +150,14 @@ class BraTSSliceDataset(Dataset):
             vol_idx = len(self.volumes)
             self.volumes.append((us_vol, fs_vol))
             for s in range(num_slices):
-                self.slice_index.append((vol_idx, s))
+                self.total_slices += 1
+                frac = target_nonzero_fraction(fs_vol[:, :, s])
+                keep = self.slice_filter == "all" or frac >= self.target_nonzero_threshold
+                if keep:
+                    self.slice_index.append((vol_idx, s))
+                    self.kept_slices += 1
         print(
-            f"Loaded {len(self.volumes)} patients, total slices: {len(self.slice_index)}"
+            f"Loaded {len(self.volumes)} patients, kept slices: {len(self.slice_index)} / {self.total_slices}"
         )
     def __len__(self):
         return len(self.slice_index)
@@ -138,6 +179,18 @@ class BraTSSliceDataset(Dataset):
         img_input = torch.from_numpy(img_input).unsqueeze(0)
         img_target = torch.from_numpy(img_target).unsqueeze(0)
         return img_input, img_target
+
+    def stats(self):
+        filtered = self.total_slices - self.kept_slices
+        return {
+            "slice_filter": self.slice_filter,
+            "target_nonzero_threshold": self.target_nonzero_threshold,
+            "patients_loaded": len(self.volumes),
+            "total_slices": self.total_slices,
+            "kept_slices": self.kept_slices,
+            "filtered_slices": filtered,
+            "filtered_fraction": (filtered / self.total_slices) if self.total_slices else 0.0,
+        }
 
 class DoubleConv(nn.Module):
     def __init__(self, in_ch, out_ch):
@@ -196,10 +249,20 @@ def main():
     args = parse_args()
     undersampled_dir, fully_sampled_dir, output_dir = resolve_paths(args)
     output_dir.mkdir(parents=True, exist_ok=True)
+    effective_num_workers = args.num_workers
+    if os.name == "nt" and effective_num_workers > 0:
+        print(
+            "Windows detected: forcing num_workers=0 for this 2D baseline because "
+            "the dataset preloads whole volumes and multiprocessing worker spawn "
+            "can fail when pickling the in-memory dataset."
+        )
+        effective_num_workers = 0
     print(f"Path profile       : {args.path_profile}")
     print(f"Undersampled root  : {undersampled_dir}")
     print(f"Fully sampled root : {fully_sampled_dir}")
     print(f"Output dir         : {output_dir}")
+    print(f"Slice filter       : {args.slice_filter}")
+    print(f"Num workers        : {effective_num_workers}")
 
     undersampled_patients = sorted(os.listdir(undersampled_dir))
     fully_sampled_patients = sorted(os.listdir(fully_sampled_dir))
@@ -218,29 +281,86 @@ def main():
     print(f"Train patients: {len(train_patients)}")
     print(f"Val   patients: {len(val_patients)}")
     print(f"Test  patients: {len(test_patients)}")
-    train_dataset = BraTSSliceDataset(
-        train_patients, undersampled_dir, fully_sampled_dir
+    save_json(
+        output_dir / "split_patients.json",
+        {
+            "train": train_patients,
+            "val": val_patients,
+            "test": test_patients,
+        },
     )
-    val_dataset = BraTSSliceDataset(val_patients, undersampled_dir, fully_sampled_dir)
-    test_dataset = BraTSSliceDataset(test_patients, undersampled_dir, fully_sampled_dir)
+
+    save_json(
+        output_dir / "config.json",
+        {
+            "path_profile": args.path_profile,
+            "undersampled_dir": str(undersampled_dir),
+            "fully_sampled_dir": str(fully_sampled_dir),
+            "output_dir": str(output_dir),
+            "batch_size": args.batch_size,
+            "epochs": args.epochs,
+            "learning_rate": args.learning_rate,
+            "num_workers_requested": args.num_workers,
+            "num_workers_effective": effective_num_workers,
+            "seed": args.seed,
+            "slice_filter": args.slice_filter,
+            "target_nonzero_threshold": args.target_nonzero_threshold,
+            "train_patients": len(train_patients),
+            "val_patients": len(val_patients),
+            "test_patients": len(test_patients),
+        },
+    )
+    train_dataset = BraTSSliceDataset(
+        train_patients,
+        undersampled_dir,
+        fully_sampled_dir,
+        slice_filter=args.slice_filter,
+        target_nonzero_threshold=args.target_nonzero_threshold,
+    )
+    val_dataset = BraTSSliceDataset(
+        val_patients,
+        undersampled_dir,
+        fully_sampled_dir,
+        slice_filter=args.slice_filter,
+        target_nonzero_threshold=args.target_nonzero_threshold,
+    )
+    test_dataset = BraTSSliceDataset(
+        test_patients,
+        undersampled_dir,
+        fully_sampled_dir,
+        slice_filter="all",
+        target_nonzero_threshold=args.target_nonzero_threshold,
+    )
+    save_json(
+        output_dir / "dataset_stats.json",
+        {
+            "train": train_dataset.stats(),
+            "val": val_dataset.stats(),
+            "test": test_dataset.stats(),
+        },
+    )
     train_loader = DataLoader(
         train_dataset,
         batch_size=args.batch_size,
         shuffle=True,
-        num_workers=args.num_workers,
+        num_workers=effective_num_workers,
         pin_memory=True,
     )
     val_loader = DataLoader(
         val_dataset,
         batch_size=args.batch_size,
         shuffle=False,
-        num_workers=args.num_workers,
+        num_workers=effective_num_workers,
         pin_memory=True,
     )
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
     print(f"Train slices: {len(train_dataset)}")
     print(f"Val   slices: {len(val_dataset)}")
     print(f"Test  slices: {len(test_dataset)}")
+    if len(train_dataset) == 0:
+        raise RuntimeError("No training slices were available after filtering.")
+    if len(val_dataset) == 0:
+        raise RuntimeError("No validation slices were available after filtering.")
     model = UNet(in_ch=1, out_ch=1).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)

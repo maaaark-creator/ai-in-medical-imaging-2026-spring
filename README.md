@@ -43,18 +43,15 @@ outputs/task1/submission_r5_deliverables/
 After Task 1 has generated undersampled T2w volumes:
 
 ```powershell
-python task2/compute_before_recon_metrics.py
+python task2/compute_before_recon_metrics.py --slice-grouping target_nonzero
 python task2/train_unet.py
-python task2/test_unet.py
+python task2/test_unet.py --slice-grouping target_nonzero
 ```
 
 Main local outputs:
 
 ```text
-outputs/task2/unet_baseline/
-  best_unet.pth
-  loss_curve.png
-  metrics_before_recon.txt
-  metrics.txt
-  reconstruction_samples.png
+outputs/task2/baseline_2d_unet_nonzero_train/               # 2D baseline checkpoint + split/config
+outputs/task2/baseline_2d_unet_nonzero_eval_target_nonzero/ # 2D baseline evaluation outputs
+outputs/task2/final_25d_unet_ctx3_nonzero_full/            # main 2.5D U-Net train + eval outputs
 ```
