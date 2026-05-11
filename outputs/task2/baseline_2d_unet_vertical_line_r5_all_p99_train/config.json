@@ -1,0 +1,19 @@
+{
+  "path_profile": "local",
+  "undersampled_dir": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_vertical_line_r5",
+  "fully_sampled_dir": "/home/lijm2024/hm2024/projects/archive",
+  "output_dir": "/home/lijm2024/hm2024/projects/ai-in-medical-imaging-2026-spring-linemask/outputs/task2/baseline_2d_unet_vertical_line_r5_all_p99_train",
+  "batch_size": 16,
+  "epochs": 30,
+  "learning_rate": 0.0001,
+  "num_workers_requested": 4,
+  "num_workers_effective": 4,
+  "seed": 42,
+  "slice_filter": "all",
+  "target_nonzero_threshold": 0.001,
+  "norm_mode": "target-volume-robust",
+  "robust_percentile": 99.0,
+  "train_patients": 437,
+  "val_patients": 62,
+  "test_patients": 126
+}

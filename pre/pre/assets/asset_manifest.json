@@ -1,0 +1,118 @@
+[
+  {
+    "file": "assets\\25d_resnet_best_gain_tissue_slices.csv",
+    "bytes": 1718
+  },
+  {
+    "file": "assets\\25d_resnet_worst_tissue_slices.csv",
+    "bytes": 1718
+  },
+  {
+    "file": "assets\\25d_unet_best_gain_tissue_slices.csv",
+    "bytes": 1698
+  },
+  {
+    "file": "assets\\25d_unet_worst_tissue_slices.csv",
+    "bytes": 1726
+  },
+  {
+    "file": "assets\\combined_25d_training_curves.png",
+    "bytes": 91752
+  },
+  {
+    "file": "assets\\consistent_tissue_metric_distributions.png",
+    "bytes": 163221
+  },
+  {
+    "file": "assets\\kspace_masking_demo.png",
+    "bytes": 412997
+  },
+  {
+    "file": "assets\\line_mask_pipeline_example.png",
+    "bytes": 668809
+  },
+  {
+    "file": "assets\\loss_curve_25d_resnet.png",
+    "bytes": 60385
+  },
+  {
+    "file": "assets\\loss_curve_25d_unet.png",
+    "bytes": 48580
+  },
+  {
+    "file": "assets\\loss_curve_2d_unet.png",
+    "bytes": 32777
+  },
+  {
+    "file": "assets\\loss_curves_contact_sheet.png",
+    "bytes": 79090
+  },
+  {
+    "file": "assets\\main_results_psnr_ssim.png",
+    "bytes": 89101
+  },
+  {
+    "file": "assets\\pointwise_exploration_results.csv",
+    "bytes": 172
+  },
+  {
+    "file": "assets\\pointwise_exploration_results.png",
+    "bytes": 72105
+  },
+  {
+    "file": "assets\\pointwise_vs_line_mask_comparison.png",
+    "bytes": 197361
+  },
+  {
+    "file": "assets\\presentation_notes.md",
+    "bytes": 908
+  },
+  {
+    "file": "assets\\psnr_gain_over_input.png",
+    "bytes": 39876
+  },
+  {
+    "file": "assets\\real_line_input_target_pair.png",
+    "bytes": 538910
+  },
+  {
+    "file": "assets\\reconstruction_samples_25d_resnet.png",
+    "bytes": 1494623
+  },
+  {
+    "file": "assets\\reconstruction_samples_25d_unet.png",
+    "bytes": 1453602
+  },
+  {
+    "file": "assets\\reconstruction_samples_2d_unet.png",
+    "bytes": 331375
+  },
+  {
+    "file": "assets\\resnet_worst5_tissue_visual_cases.csv",
+    "bytes": 918
+  },
+  {
+    "file": "assets\\resnet_worst5_tissue_visuals.png",
+    "bytes": 1727838
+  },
+  {
+    "file": "assets\\selected_kspace_example.json",
+    "bytes": 302
+  },
+  {
+    "file": "assets\\task2_main_results.csv",
+    "bytes": 297
+  },
+  {
+    "file": "assets\\task2_main_results.json",
+    "bytes": 746
+  },
+  {
+    "file": "assets\\task2_main_results.md",
+    "bytes": 297
+  },
+  {
+    "file": "assets\\vertical_line_mask_r5_seed42.png",
+    "bytes": 11121
+  }
+]

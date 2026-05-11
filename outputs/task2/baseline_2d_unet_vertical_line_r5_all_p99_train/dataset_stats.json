@@ -1,0 +1,35 @@
+{
+  "train": {
+    "slice_filter": "all",
+    "target_nonzero_threshold": 0.001,
+    "norm_mode": "target-volume-robust",
+    "robust_percentile": 99.0,
+    "patients_loaded": 437,
+    "total_slices": 67735,
+    "kept_slices": 67735,
+    "filtered_slices": 0,
+    "filtered_fraction": 0.0
+  },
+  "val": {
+    "slice_filter": "all",
+    "target_nonzero_threshold": 0.001,
+    "norm_mode": "target-volume-robust",
+    "robust_percentile": 99.0,
+    "patients_loaded": 62,
+    "total_slices": 9610,
+    "kept_slices": 9610,
+    "filtered_slices": 0,
+    "filtered_fraction": 0.0
+  },
+  "test": {
+    "slice_filter": "all",
+    "target_nonzero_threshold": 0.001,
+    "norm_mode": "target-volume-robust",
+    "robust_percentile": 99.0,
+    "patients_loaded": 126,
+    "total_slices": 19530,
+    "kept_slices": 19530,
+    "filtered_slices": 0,
+    "filtered_fraction": 0.0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "all_slices": {
+    "count": 19530,
+    "before_psnr": 36.110602297010765,
+    "before_ssim": 0.7521656277999593,
+    "after_psnr": 43.33705172260304,
+    "after_ssim": 0.8800241977306801
+  },
+  "nonblank_slices": {
+    "count": 17340,
+    "blank_threshold": 0.001,
+    "before_psnr": 28.543762486646308,
+    "before_ssim": 0.7210227866827482,
+    "after_psnr": 38.70473590700904,
+    "after_ssim": 0.98136982604599
+  }
+}

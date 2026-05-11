@@ -1,0 +1,4 @@
+regime,method,psnr,ssim
+Point-wise exploratory,Input,30.001579,0.373258
+Point-wise exploratory,2D U-Net,39.423,0.9681
+Point-wise exploratory,2.5D U-Net,40.952,0.988181

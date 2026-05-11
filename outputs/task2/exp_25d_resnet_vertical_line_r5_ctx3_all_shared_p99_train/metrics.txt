@@ -1,0 +1,20 @@
+=== 2.5D Residual ResNet Reconstruction Metrics ===
+
+[All slices]
+Count       : 19530
+Before PSNR : 36.1106 dB
+Before SSIM : 0.752166
+After PSNR  : 43.3371 dB
+After SSIM  : 0.880024
+PSNR gain   : 7.2264 dB
+SSIM gain   : 0.127859
+
+[Non-blank / tissue slices]
+Count       : 17340
+Threshold   : target nonzero fraction >= 0.001
+Before PSNR : 28.5438 dB
+Before SSIM : 0.721023
+After PSNR  : 38.7047 dB
+After SSIM  : 0.981370
+PSNR gain   : 10.1610 dB
+SSIM gain   : 0.260347

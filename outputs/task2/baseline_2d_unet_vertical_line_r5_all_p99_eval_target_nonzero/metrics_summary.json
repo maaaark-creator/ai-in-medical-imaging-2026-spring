@@ -1,0 +1,16 @@
+{
+  "all_slices": {
+    "count": 19530,
+    "psnr": 40.49451339814904,
+    "ssim": 0.9761928660817222
+  },
+  "selected_slices": {
+    "title": "Non-blank slices (target nonzero fraction >= 0.001)",
+    "count": 17340,
+    "psnr": 36.364833667463934,
+    "ssim": 0.9731955871916464,
+    "slice_grouping": "target_nonzero",
+    "target_nonzero_threshold": 0.001,
+    "background_psnr_threshold": 56.0
+  }
+}
