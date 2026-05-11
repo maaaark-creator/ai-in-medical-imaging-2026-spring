@@ -1,0 +1,10 @@
+=== All Slices ===
+Count: 19530
+PSNR Mean: 41.3012 dB
+SSIM Mean: 0.9693
+Max PSNR in test set: 56.4186 dB
+
+=== Tissue Slices (PSNR <= 56.0 dB) ===
+Count: 17510
+PSNR Mean: 39.5572 dB
+SSIM Mean: 0.9682

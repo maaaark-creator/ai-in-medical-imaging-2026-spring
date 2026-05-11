@@ -1,0 +1,6 @@
+{
+  "best_loss": 0.00010496025628154388,
+  "epochs_ran": 30,
+  "best_checkpoint": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\ai-in-medical-imaging-2026-spring\\outputs\\task2\\25d_unet_context3_nonzero\\best_unet25d.pth",
+  "history_csv": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\ai-in-medical-imaging-2026-spring\\outputs\\task2\\25d_unet_context3_nonzero\\history.csv"
+}

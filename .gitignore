@@ -7,7 +7,29 @@ __pycache__/
 raw_data/
 archive/
 archive.zip
-outputs/
+pre/assets.zip
+# Generated outputs: keep large data/checkpoints out of git, but allow
+# lightweight result summaries and visualization assets.
+outputs/*
+!outputs/**/
+!outputs/**/*.png
+!outputs/**/*.jpg
+!outputs/**/*.jpeg
+!outputs/**/*.csv
+!outputs/**/*.txt
+!outputs/**/*.json
+!outputs/**/*.md
+!outputs/**/*.html
+!outputs/**/*.pdf
+# Avoid duplicated nested output bundles with very long Windows paths.
+outputs/task2/*/outputs/
+outputs/**/*.pth
+outputs/**/*.pt
+outputs/**/*.ckpt
+outputs/**/*.npz
+outputs/**/*.npy
+outputs/**/*.nii
+outputs/**/*.nii.gz
 kspace_t2w_slicewise_fft/
 undersampled_raw_data_t2w_r5/
 .matplotlib/
