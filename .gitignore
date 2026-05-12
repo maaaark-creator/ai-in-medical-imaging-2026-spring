@@ -8,6 +8,7 @@ raw_data/
 archive/
 archive.zip
 pre/assets.zip
+pre/pre/
 # Generated outputs: keep large data/checkpoints out of git, but allow
 # lightweight result summaries and visualization assets.
 outputs/*
