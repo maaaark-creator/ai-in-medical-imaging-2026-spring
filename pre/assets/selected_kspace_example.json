@@ -1,8 +1,0 @@
-{
-  "kspace_file": "kspace_t2w_slicewise_fft\\BraTS-GLI-00692-001\\BraTS-GLI-00692-001-t2w_kspace_complex.npz",
-  "patient_id": "BraTS-GLI-00692-001",
-  "slice_index": 89,
-  "mask_acceleration": 5.0,
-  "mask_sampled_fraction": 0.20000000298023224,
-  "display_scale_target_p99": 4309.9990234375
-}

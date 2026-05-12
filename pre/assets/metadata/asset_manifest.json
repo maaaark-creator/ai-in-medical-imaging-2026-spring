@@ -1,0 +1,182 @@
+﻿[
+    {
+        "file":  "assets\\figures\\25d_unet_bf64_tissue_vs_all_psnr.png",
+        "bytes":  51106
+    },
+    {
+        "file":  "assets\\figures\\25d_unet_capacity_ablation.png",
+        "bytes":  99181
+    },
+    {
+        "file":  "assets\\figures\\combined_25d_training_curves.png",
+        "bytes":  113433
+    },
+    {
+        "file":  "assets\\figures\\consistent_tissue_metric_distributions.png",
+        "bytes":  178686
+    },
+    {
+        "file":  "assets\\figures\\kspace_masking_demo.png",
+        "bytes":  412997
+    },
+    {
+        "file":  "assets\\figures\\line_mask_pipeline_example.png",
+        "bytes":  668809
+    },
+    {
+        "file":  "assets\\figures\\loss_curve_25d_resnet.png",
+        "bytes":  60385
+    },
+    {
+        "file":  "assets\\figures\\loss_curve_25d_unet.png",
+        "bytes":  48580
+    },
+    {
+        "file":  "assets\\figures\\loss_curve_25d_unet_bf64.png",
+        "bytes":  54557
+    },
+    {
+        "file":  "assets\\figures\\loss_curve_2d_unet.png",
+        "bytes":  32777
+    },
+    {
+        "file":  "assets\\figures\\loss_curves_contact_sheet.png",
+        "bytes":  71587
+    },
+    {
+        "file":  "assets\\figures\\main_results_psnr_ssim.png",
+        "bytes":  95323
+    },
+    {
+        "file":  "assets\\figures\\pointwise_exploration_results.png",
+        "bytes":  72105
+    },
+    {
+        "file":  "assets\\figures\\pointwise_vs_line_mask_comparison.png",
+        "bytes":  197361
+    },
+    {
+        "file":  "assets\\figures\\psnr_gain_over_input.png",
+        "bytes":  45467
+    },
+    {
+        "file":  "assets\\figures\\real_line_input_target_pair.png",
+        "bytes":  538910
+    },
+    {
+        "file":  "assets\\figures\\reconstruction_samples_25d_resnet.png",
+        "bytes":  1494623
+    },
+    {
+        "file":  "assets\\figures\\reconstruction_samples_25d_unet.png",
+        "bytes":  1453602
+    },
+    {
+        "file":  "assets\\figures\\reconstruction_samples_25d_unet_bf64.png",
+        "bytes":  1454048
+    },
+    {
+        "file":  "assets\\figures\\reconstruction_samples_2d_unet.png",
+        "bytes":  331375
+    },
+    {
+        "file":  "assets\\figures\\resnet_worst5_tissue_visuals.png",
+        "bytes":  1727838
+    },
+    {
+        "file":  "assets\\figures\\task2_extended_metrics_summary_table.png",
+        "bytes":  84063
+    },
+    {
+        "file":  "assets\\figures\\task2_nonzero_key_metrics.png",
+        "bytes":  160318
+    },
+    {
+        "file":  "assets\\figures\\vertical_line_mask_r5_seed42.png",
+        "bytes":  11121
+    },
+    {
+        "file":  "assets\\metadata\\selected_kspace_example.json",
+        "bytes":  302
+    },
+    {
+        "file":  "assets\\metadata\\task2_main_results.json",
+        "bytes":  932
+    },
+    {
+        "file":  "assets\\model_diagrams\\2.5dresnetbody.png",
+        "bytes":  1214146
+    },
+    {
+        "file":  "assets\\model_diagrams\\2.5dunetbody.png",
+        "bytes":  1384664
+    },
+    {
+        "file":  "assets\\model_diagrams\\2dunetbody.png",
+        "bytes":  1112361
+    },
+    {
+        "file":  "assets\\model_diagrams\\densenetbody.png",
+        "bytes":  1239452
+    },
+    {
+        "file":  "assets\\notes\\presentation_notes.md",
+        "bytes":  1179
+    },
+    {
+        "file":  "assets\\tables\\25d_resnet_best_gain_tissue_slices.csv",
+        "bytes":  1718
+    },
+    {
+        "file":  "assets\\tables\\25d_resnet_worst_tissue_slices.csv",
+        "bytes":  1718
+    },
+    {
+        "file":  "assets\\tables\\25d_unet_best_gain_tissue_slices.csv",
+        "bytes":  1698
+    },
+    {
+        "file":  "assets\\tables\\25d_unet_bf64_best_gain_tissue_slices.csv",
+        "bytes":  1712
+    },
+    {
+        "file":  "assets\\tables\\25d_unet_bf64_worst_tissue_slices.csv",
+        "bytes":  1743
+    },
+    {
+        "file":  "assets\\tables\\25d_unet_capacity_ablation.csv",
+        "bytes":  285
+    },
+    {
+        "file":  "assets\\tables\\25d_unet_worst_tissue_slices.csv",
+        "bytes":  1726
+    },
+    {
+        "file":  "assets\\tables\\pointwise_exploration_results.csv",
+        "bytes":  172
+    },
+    {
+        "file":  "assets\\tables\\resnet_worst5_tissue_visual_cases.csv",
+        "bytes":  918
+    },
+    {
+        "file":  "assets\\tables\\task2_main_results.csv",
+        "bytes":  356
+    },
+    {
+        "file":  "assets\\tables\\task2_main_results.md",
+        "bytes":  351
+    },
+    {
+        "file":  "assets\\tables\\task2_nonzero_extended_metrics_summary.csv",
+        "bytes":  1491
+    },
+    {
+        "file":  "assets\\tables\\task2_nonzero_extended_metrics_summary.md",
+        "bytes":  667
+    },
+    {
+        "file":  "assets\\tables\\task2_nonzero_mae_rmse_per_slice.csv",
+        "bytes":  7159630
+    }
+]
