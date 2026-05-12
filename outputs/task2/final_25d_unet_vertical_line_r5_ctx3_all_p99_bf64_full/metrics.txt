@@ -1,0 +1,20 @@
+=== 2.5D U-Net Reconstruction Metrics ===
+
+[All slices]
+Count       : 19530
+Before PSNR : 36.1106 dB
+Before SSIM : 0.752166
+After PSNR  : 38.6500 dB
+After SSIM  : 0.877860
+PSNR gain   : 2.5394 dB
+SSIM gain   : 0.125695
+
+[Non-blank / tissue slices]
+Count       : 17340
+Threshold   : target nonzero fraction >= 0.001
+Before PSNR : 28.5438 dB
+Before SSIM : 0.721023
+After PSNR  : 35.7943 dB
+After SSIM  : 0.978944
+PSNR gain   : 7.2505 dB
+SSIM gain   : 0.257921

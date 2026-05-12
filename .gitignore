@@ -21,6 +21,8 @@ outputs/*
 !outputs/**/*.md
 !outputs/**/*.html
 !outputs/**/*.pdf
+# Avoid duplicated nested output bundles with very long Windows paths.
+outputs/task2/*/outputs/
 outputs/**/*.pth
 outputs/**/*.pt
 outputs/**/*.ckpt

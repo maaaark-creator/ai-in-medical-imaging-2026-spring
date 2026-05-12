@@ -1,0 +1,22 @@
+{
+  "undersampled_dir": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_vertical_line_r5",
+  "fully_sampled_dir": "/home/lijm2024/hm2024/projects/archive",
+  "output_dir": "/home/lijm2024/hm2024/projects/ai-in-medical-imaging-2026-spring-linemask/outputs/task2/final_25d_unet_vertical_line_r5_ctx3_all_p99_bf64_full",
+  "context_slices": 3,
+  "slice_filter": "all",
+  "blank_threshold": 0.001,
+  "norm_mode": "target-volume-robust",
+  "robust_percentile": 99.0,
+  "batch_size": 2,
+  "epochs": 30,
+  "lr": 0.0001,
+  "weight_decay": 1e-05,
+  "early_stop_patience": 5,
+  "seed": 42,
+  "num_workers": 2,
+  "cache_size": 2,
+  "limit_patients": null,
+  "base_features": 64,
+  "resume": null,
+  "device": "cuda"
+}
