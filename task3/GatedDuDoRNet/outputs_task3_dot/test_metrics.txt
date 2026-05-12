@@ -1,0 +1,4 @@
+checkpoint: outputs_task3/best_gated_dudornet.pt
+test_loss: 0.00625362
+test_psnr: 46.315909
+test_ssim: 0.979653

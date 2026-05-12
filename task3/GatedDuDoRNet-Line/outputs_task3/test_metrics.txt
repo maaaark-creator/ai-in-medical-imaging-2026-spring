@@ -1,0 +1,4 @@
+checkpoint: /home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet-Line/outputs_task3/best_gated_dudornet.pt
+test_loss: 0.01100577
+test_psnr: 37.861650
+test_ssim: 0.958638
