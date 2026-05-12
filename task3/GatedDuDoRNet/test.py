@@ -5,6 +5,7 @@ import csv
 import random
 from pathlib import Path
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
@@ -43,6 +44,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-cascades", type=int, default=4)
     parser.add_argument("--no-kspace-refinement", action="store_true")
     parser.add_argument("--no-shared-cascade-weights", action="store_true")
+    parser.add_argument("--min-nonzero-fraction", type=float, default=0.005)
     parser.add_argument("--num-sample-images", type=int, default=10)
     parser.add_argument("--dry-run", action="store_true", help="Build test loader/model and exit before evaluation.")
     return parser.parse_args()
@@ -56,6 +58,7 @@ def build_test_loader(args: argparse.Namespace) -> DataLoader:
         acceleration=args.acceleration,
         center_fraction=args.center_fraction,
         sigma=args.sigma,
+        min_nonzero_fraction=args.min_nonzero_fraction,
         seed=args.seed,
     )
     return DataLoader(
@@ -82,6 +85,18 @@ def move_batch_to_device(batch: dict, device: torch.device) -> dict[str, torch.T
 def batch_psnr(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     mse = torch.mean((pred.clamp(0.0, 1.0) - target) ** 2, dim=(1, 2, 3))
     return 10.0 * torch.log10(1.0 / torch.clamp(mse, min=1e-12))
+
+
+def batch_mae(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    return torch.mean(torch.abs(pred.clamp(0.0, 1.0) - target.clamp(0.0, 1.0)), dim=(1, 2, 3))
+
+
+def batch_mse(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    return torch.mean((pred.clamp(0.0, 1.0) - target.clamp(0.0, 1.0)) ** 2, dim=(1, 2, 3))
+
+
+def batch_rmse(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    return torch.sqrt(torch.clamp(batch_mse(pred, target), min=0.0))
 
 
 def batch_ssim(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
@@ -127,12 +142,17 @@ def evaluate(
     loader: DataLoader,
     criterion: HybridReconstructionLoss,
     device: torch.device,
-) -> tuple[float, float, float]:
+) -> dict[str, float]:
     model.eval()
     total_loss = 0.0
-    total_psnr = 0.0
-    total_ssim = 0.0
     total_samples = 0
+    metric_values: dict[str, list[float]] = {
+        "mae": [],
+        "mse": [],
+        "rmse": [],
+        "psnr": [],
+        "ssim": [],
+    }
 
     with torch.no_grad():
         for batch in tqdm(loader, desc="test"):
@@ -147,12 +167,29 @@ def evaluate(
             loss = criterion(pred, batch_t["target_t2"])
             batch_size = batch_t["target_t2"].size(0)
             total_loss += loss.item() * batch_size
-            total_psnr += batch_psnr(pred, batch_t["target_t2"]).sum().item()
-            total_ssim += batch_ssim(pred, batch_t["target_t2"]).sum().item()
             total_samples += batch_size
+            metric_values["mae"].extend(batch_mae(pred, batch_t["target_t2"]).cpu().tolist())
+            metric_values["mse"].extend(batch_mse(pred, batch_t["target_t2"]).cpu().tolist())
+            metric_values["rmse"].extend(batch_rmse(pred, batch_t["target_t2"]).cpu().tolist())
+            metric_values["psnr"].extend(batch_psnr(pred, batch_t["target_t2"]).cpu().tolist())
+            metric_values["ssim"].extend(batch_ssim(pred, batch_t["target_t2"]).cpu().tolist())
 
     total_samples = max(total_samples, 1)
-    return total_loss / total_samples, total_psnr / total_samples, total_ssim / total_samples
+    results: dict[str, float] = {
+        "test_loss": total_loss / total_samples,
+        "num_samples": float(len(metric_values["mae"])),
+    }
+    for metric_name, values in metric_values.items():
+        if values:
+            arr = np.asarray(values, dtype=np.float64)
+            results[f"{metric_name}_mean"] = float(arr.mean())
+            results[f"{metric_name}_var"] = float(arr.var())
+            results[f"{metric_name}_std"] = float(arr.std())
+        else:
+            results[f"{metric_name}_mean"] = 0.0
+            results[f"{metric_name}_var"] = 0.0
+            results[f"{metric_name}_std"] = 0.0
+    return results
 
 
 def save_random_reconstruction_samples(
@@ -249,13 +286,16 @@ def main() -> None:
 
     model = load_model(args, device)
     criterion = HybridReconstructionLoss(l1_weight=0.85, ssim_weight=0.15)
-    test_loss, test_psnr, test_ssim = evaluate(model, test_loader, criterion, device)
+    metrics = evaluate(model, test_loader, criterion, device)
 
     with (args.output_dir / "test_metrics.txt").open("w", encoding="utf-8") as f:
         f.write(f"checkpoint: {args.checkpoint}\n")
-        f.write(f"test_loss: {test_loss:.8f}\n")
-        f.write(f"test_psnr: {test_psnr:.6f}\n")
-        f.write(f"test_ssim: {test_ssim:.6f}\n")
+        f.write(f"num_samples: {int(metrics['num_samples'])}\n")
+        f.write(f"test_loss: {metrics['test_loss']:.8f}\n")
+        for metric_name in ["mae", "mse", "rmse", "psnr", "ssim"]:
+            f.write(f"{metric_name}_mean: {metrics[f'{metric_name}_mean']:.8f}\n")
+            f.write(f"{metric_name}_var: {metrics[f'{metric_name}_var']:.8f}\n")
+            f.write(f"{metric_name}_std: {metrics[f'{metric_name}_std']:.8f}\n")
 
     save_random_reconstruction_samples(
         model=model,
@@ -265,7 +305,18 @@ def main() -> None:
         num_samples=args.num_sample_images,
         seed=args.seed,
     )
-    print(f"Test loss: {test_loss:.6f} | PSNR: {test_psnr:.3f} | SSIM: {test_ssim:.4f}")
+    print(
+        " | ".join(
+            [
+                f"Test loss: {metrics['test_loss']:.6f}",
+                f"MAE mean/std: {metrics['mae_mean']:.6f}/{metrics['mae_std']:.6f}",
+                f"MSE mean/std: {metrics['mse_mean']:.6f}/{metrics['mse_std']:.6f}",
+                f"RMSE mean/std: {metrics['rmse_mean']:.6f}/{metrics['rmse_std']:.6f}",
+                f"PSNR mean/std: {metrics['psnr_mean']:.3f}/{metrics['psnr_std']:.3f}",
+                f"SSIM mean/std: {metrics['ssim_mean']:.4f}/{metrics['ssim_std']:.4f}",
+            ]
+        )
+    )
 
 
 if __name__ == "__main__":

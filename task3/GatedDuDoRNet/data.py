@@ -182,7 +182,7 @@ class BraTSMultiModalKSpaceDataset(Dataset):
         acceleration: float = 5.0,
         center_fraction: float = 0.10,
         sigma: float = 0.28,
-        min_nonzero_fraction: float = 0.02,
+        min_nonzero_fraction: float = 0.005,
         seed: int = 42,
     ) -> None:
         if torch is None:
@@ -202,6 +202,7 @@ class BraTSMultiModalKSpaceDataset(Dataset):
         self.acceleration = acceleration
         self.center_fraction = center_fraction
         self.sigma = sigma
+        self.min_nonzero_fraction = min_nonzero_fraction
         self.seed = seed
         self.cases: list[tuple[str, Path, Path, int]] = []
         self.slice_index: list[tuple[int, int]] = []
@@ -219,9 +220,12 @@ class BraTSMultiModalKSpaceDataset(Dataset):
             case_idx = len(self.cases)
             self.cases.append((case_id, t1_path, t2_path, num_slices))
 
-            # Keep Dataset construction light. Filtering empty slices by reading
-            # full 3D volumes is memory-heavy for BraTS, so we avoid it here.
             for slice_z in range(num_slices):
+                if self.min_nonzero_fraction > 0.0:
+                    t2_slice = np.asarray(t2_img.dataobj[:, :, slice_z], dtype=np.float32)
+                    nonzero_fraction = float(np.mean(t2_slice > 0))
+                    if nonzero_fraction < self.min_nonzero_fraction:
+                        continue
                 self.slice_index.append((case_idx, slice_z))
 
     def __len__(self) -> int:

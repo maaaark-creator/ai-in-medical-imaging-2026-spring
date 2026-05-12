@@ -49,8 +49,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--num-workers", type=int, default=2)
-    parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--weight-decay", type=float, default=1e-5)
+    parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument(
+        "--early-stop-patience",
+        type=int,
+        default=8,
+        help="Stop training after this many epochs without validation loss improvement. Use 0 to disable.",
+    )
     parser.add_argument("--acceleration", type=float, default=5.0)
     parser.add_argument("--center-fraction", type=float, default=0.10)
     parser.add_argument("--sigma", type=float, default=0.28)
@@ -255,6 +261,7 @@ def main() -> None:
         return
 
     best_val_loss = float("inf")
+    epochs_without_improvement = 0
     history: list[dict[str, float]] = []
     log_path = args.output_dir / "training_log.csv"
     with log_path.open("w", newline="", encoding="utf-8") as f:
@@ -359,6 +366,7 @@ def main() -> None:
             if val_loss < best_val_loss:
                 previous_best = best_val_loss
                 best_val_loss = val_loss
+                epochs_without_improvement = 0
                 checkpoint_path = args.output_dir / "best_gated_dudornet.pt"
                 torch.save(
                     {
@@ -378,9 +386,25 @@ def main() -> None:
                     )
                 print(f"  saved checkpoint: {checkpoint_path}")
             else:
+                epochs_without_improvement += 1
                 print(
                     f"  best model: not improved; best val_loss remains {best_val_loss:.6f}"
                 )
+                if args.early_stop_patience > 0:
+                    print(
+                        f"  early stopping: {epochs_without_improvement}/"
+                        f"{args.early_stop_patience} epochs without improvement"
+                    )
+
+            if (
+                args.early_stop_patience > 0
+                and epochs_without_improvement >= args.early_stop_patience
+            ):
+                print(
+                    f"Early stopping triggered after {epoch} epochs. "
+                    f"Best validation loss: {best_val_loss:.6f}"
+                )
+                break
 
     torch.save(model.state_dict(), args.output_dir / "last_gated_dudornet_state_dict.pt")
     plot_loss_curve(history, args.output_dir)
