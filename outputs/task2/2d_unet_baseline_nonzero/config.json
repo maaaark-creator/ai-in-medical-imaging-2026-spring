@@ -1,0 +1,17 @@
+{
+  "path_profile": "local",
+  "undersampled_dir": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\undersampled_raw_data_t2w_r5",
+  "fully_sampled_dir": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\archive",
+  "output_dir": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\ai-in-medical-imaging-2026-spring\\outputs\\task2\\2d_unet_baseline_nonzero",
+  "batch_size": 16,
+  "epochs": 20,
+  "learning_rate": 0.0001,
+  "num_workers_requested": 4,
+  "num_workers_effective": 0,
+  "seed": 42,
+  "slice_filter": "nonzero",
+  "target_nonzero_threshold": 0.001,
+  "train_patients": 437,
+  "val_patients": 62,
+  "test_patients": 126
+}

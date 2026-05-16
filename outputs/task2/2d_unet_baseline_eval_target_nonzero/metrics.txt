@@ -1,0 +1,12 @@
+=== All Slices ===
+Count: 19530
+PSNR Mean: 41.3012 dB
+SSIM Mean: 0.9693
+Max PSNR in test set: 56.4186 dB
+Slice grouping: target_nonzero
+
+=== Non-blank slices (target nonzero fraction >= 0.001) ===
+Count: 17340
+Definition: target_nonzero_fraction >= 0.001
+PSNR Mean: 39.4230 dB
+SSIM Mean: 0.9681

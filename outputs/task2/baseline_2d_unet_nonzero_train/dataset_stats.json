@@ -1,0 +1,29 @@
+{
+  "train": {
+    "slice_filter": "nonzero",
+    "target_nonzero_threshold": 0.001,
+    "patients_loaded": 437,
+    "total_slices": 67735,
+    "kept_slices": 60511,
+    "filtered_slices": 7224,
+    "filtered_fraction": 0.10665091902266184
+  },
+  "val": {
+    "slice_filter": "nonzero",
+    "target_nonzero_threshold": 0.001,
+    "patients_loaded": 62,
+    "total_slices": 9610,
+    "kept_slices": 8550,
+    "filtered_slices": 1060,
+    "filtered_fraction": 0.11030176899063475
+  },
+  "test": {
+    "slice_filter": "all",
+    "target_nonzero_threshold": 0.001,
+    "patients_loaded": 126,
+    "total_slices": 19530,
+    "kept_slices": 19530,
+    "filtered_slices": 0,
+    "filtered_fraction": 0.0
+  }
+}

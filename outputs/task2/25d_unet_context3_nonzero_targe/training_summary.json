@@ -1,0 +1,6 @@
+{
+  "best_loss": 8.285764906558361e-05,
+  "epochs_ran": 30,
+  "best_checkpoint": "/home/lijm2024/hm2024/projects/ai-in-medical-imaging-2026-spring/outputs/task2/full_30ep_run1/best_resnet25d.pth",
+  "history_csv": "/home/lijm2024/hm2024/projects/ai-in-medical-imaging-2026-spring/outputs/task2/full_30ep_run1/history.csv"
+}

@@ -1,0 +1,20 @@
+{
+  "undersampled_dir": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\undersampled_raw_data_t2w_r5",
+  "fully_sampled_dir": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\archive",
+  "output_dir": "D:\\hemu_STU\\A_semester\\second_year_spring\\AI in MI\\proj\\reconstruction\\git\\ai-in-medical-imaging-2026-spring\\outputs\\task2\\25d_unet_context3_nonzero",
+  "context_slices": 3,
+  "slice_filter": "nonzero",
+  "blank_threshold": 0.001,
+  "batch_size": 4,
+  "epochs": 30,
+  "lr": 0.0001,
+  "weight_decay": 1e-05,
+  "early_stop_patience": 5,
+  "seed": 42,
+  "num_workers": 2,
+  "cache_size": 2,
+  "limit_patients": null,
+  "base_features": 32,
+  "resume": "..\\outputs\\task2\\25d_unet_context3_nonzero\\last_checkpoint.pth",
+  "device": "cuda"
+}

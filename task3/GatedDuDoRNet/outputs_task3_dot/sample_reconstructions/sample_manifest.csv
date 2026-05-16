@@ -1,0 +1,11 @@
+sample_index,dataset_index,case_id,slice_z,figure_path
+1,3648,BraTS-GLI-00052-000,83,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_01_BraTS-GLI-00052-000_slice_083.png
+2,819,BraTS-GLI-00421-000,44,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_02_BraTS-GLI-00421-000_slice_044.png
+3,9012,BraTS-GLI-00207-000,22,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_03_BraTS-GLI-00207-000_slice_022.png
+4,8024,BraTS-GLI-00280-000,119,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_04_BraTS-GLI-00280-000_slice_119.png
+5,7314,BraTS-GLI-00732-000,29,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_05_BraTS-GLI-00732-000_slice_029.png
+6,4572,BraTS-GLI-00691-000,77,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_06_BraTS-GLI-00691-000_slice_077.png
+7,3358,BraTS-GLI-00177-000,103,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_07_BraTS-GLI-00177-000_slice_103.png
+8,17870,BraTS-GLI-00544-000,45,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_08_BraTS-GLI-00544-000_slice_045.png
+9,2848,BraTS-GLI-00068-000,58,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_09_BraTS-GLI-00068-000_slice_058.png
+10,19349,BraTS-GLI-00024-000,129,/home/ubuntu/Desktop/project1_without_rawdata/GatedDuDoRNet/outputs_task3/sample_reconstructions/sample_10_BraTS-GLI-00024-000_slice_129.png

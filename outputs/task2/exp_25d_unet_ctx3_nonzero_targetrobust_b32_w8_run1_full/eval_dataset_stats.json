@@ -1,0 +1,1276 @@
+{
+  "patients_requested": 126,
+  "patients_loaded": 126,
+  "missing_or_unreadable_patients": [],
+  "shape_mismatches": [],
+  "slice_filter": "all",
+  "blank_threshold": 0.001,
+  "norm_mode": "target-volume-robust",
+  "robust_percentile": 99.0,
+  "total_slices": 19530,
+  "kept_slices": 19530,
+  "filtered_slices": 0,
+  "filtered_fraction": 0.0,
+  "per_patient": [
+    {
+      "patient_id": "BraTS-GLI-00692-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00692-001/BraTS-GLI-00692-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00692-001/BraTS-GLI-00692-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 4431.4248046875,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00274-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00274-000/BraTS-GLI-00274-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00274-000/BraTS-GLI-00274-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1487.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00166-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00166-000/BraTS-GLI-00166-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00166-000/BraTS-GLI-00166-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 4186.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00659-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00659-000/BraTS-GLI-00659-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00659-000/BraTS-GLI-00659-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1856.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00206-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00206-000/BraTS-GLI-00206-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00206-000/BraTS-GLI-00206-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 3615.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00421-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00421-000/BraTS-GLI-00421-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00421-000/BraTS-GLI-00421-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1295.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00502-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00502-000/BraTS-GLI-00502-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00502-000/BraTS-GLI-00502-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2040.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00148-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00148-000/BraTS-GLI-00148-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00148-000/BraTS-GLI-00148-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 716.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00495-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00495-001/BraTS-GLI-00495-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00495-001/BraTS-GLI-00495-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 843.1275024414062,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00655-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00655-000/BraTS-GLI-00655-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00655-000/BraTS-GLI-00655-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1488.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00558-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00558-000/BraTS-GLI-00558-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00558-000/BraTS-GLI-00558-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2001.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00453-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00453-000/BraTS-GLI-00453-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00453-000/BraTS-GLI-00453-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1822.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00124-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00124-000/BraTS-GLI-00124-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00124-000/BraTS-GLI-00124-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1220.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00014-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00014-000/BraTS-GLI-00014-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00014-000/BraTS-GLI-00014-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2158.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00320-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00320-000/BraTS-GLI-00320-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00320-000/BraTS-GLI-00320-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1878.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00588-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00588-000/BraTS-GLI-00588-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00588-000/BraTS-GLI-00588-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1103.8934326171875,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00500-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00500-000/BraTS-GLI-00500-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00500-000/BraTS-GLI-00500-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1901.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00502-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00502-001/BraTS-GLI-00502-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00502-001/BraTS-GLI-00502-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1012.19873046875,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00068-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00068-000/BraTS-GLI-00068-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00068-000/BraTS-GLI-00068-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1832.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00715-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00715-001/BraTS-GLI-00715-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00715-001/BraTS-GLI-00715-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1054.9537353515625,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00716-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00716-000/BraTS-GLI-00716-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00716-000/BraTS-GLI-00716-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2064.4499999999534,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00177-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00177-000/BraTS-GLI-00177-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00177-000/BraTS-GLI-00177-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1256.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00118-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00118-000/BraTS-GLI-00118-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00118-000/BraTS-GLI-00118-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 703.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00052-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00052-000/BraTS-GLI-00052-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00052-000/BraTS-GLI-00052-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1855.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00099-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00099-000/BraTS-GLI-00099-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00099-000/BraTS-GLI-00099-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2193.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00613-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00613-000/BraTS-GLI-00613-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00613-000/BraTS-GLI-00613-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2211.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00630-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00630-000/BraTS-GLI-00630-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00630-000/BraTS-GLI-00630-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2004.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00154-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00154-000/BraTS-GLI-00154-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00154-000/BraTS-GLI-00154-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1506.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00663-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00663-000/BraTS-GLI-00663-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00663-000/BraTS-GLI-00663-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1565.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00691-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00691-000/BraTS-GLI-00691-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00691-000/BraTS-GLI-00691-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1808.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00517-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00517-000/BraTS-GLI-00517-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00517-000/BraTS-GLI-00517-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1929.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00548-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00548-000/BraTS-GLI-00548-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00548-000/BraTS-GLI-00548-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2128.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00338-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00338-000/BraTS-GLI-00338-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00338-000/BraTS-GLI-00338-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 822.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00313-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00313-000/BraTS-GLI-00313-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00313-000/BraTS-GLI-00313-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1429.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00735-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00735-000/BraTS-GLI-00735-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00735-000/BraTS-GLI-00735-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1214.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00340-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00340-000/BraTS-GLI-00340-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00340-000/BraTS-GLI-00340-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1457.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00159-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00159-000/BraTS-GLI-00159-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00159-000/BraTS-GLI-00159-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1738.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00577-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00577-000/BraTS-GLI-00577-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00577-000/BraTS-GLI-00577-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 3692.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00514-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00514-000/BraTS-GLI-00514-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00514-000/BraTS-GLI-00514-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2018.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00619-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00619-001/BraTS-GLI-00619-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00619-001/BraTS-GLI-00619-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1761.5279541015625,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00267-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00267-000/BraTS-GLI-00267-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00267-000/BraTS-GLI-00267-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1304.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00413-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00413-000/BraTS-GLI-00413-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00413-000/BraTS-GLI-00413-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1168.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00266-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00266-000/BraTS-GLI-00266-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00266-000/BraTS-GLI-00266-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 912.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00071-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00071-000/BraTS-GLI-00071-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00071-000/BraTS-GLI-00071-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1754.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00344-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00344-000/BraTS-GLI-00344-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00344-000/BraTS-GLI-00344-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1178.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00518-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00518-000/BraTS-GLI-00518-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00518-000/BraTS-GLI-00518-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2390.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00414-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00414-000/BraTS-GLI-00414-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00414-000/BraTS-GLI-00414-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1695.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00732-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00732-000/BraTS-GLI-00732-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00732-000/BraTS-GLI-00732-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2507.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00291-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00291-000/BraTS-GLI-00291-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00291-000/BraTS-GLI-00291-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1235.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00059-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00059-001/BraTS-GLI-00059-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00059-001/BraTS-GLI-00059-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 729.484375,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00429-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00429-000/BraTS-GLI-00429-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00429-000/BraTS-GLI-00429-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 544.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00280-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00280-000/BraTS-GLI-00280-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00280-000/BraTS-GLI-00280-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1827.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00347-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00347-000/BraTS-GLI-00347-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00347-000/BraTS-GLI-00347-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1583.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00499-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00499-000/BraTS-GLI-00499-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00499-000/BraTS-GLI-00499-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1890.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00581-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00581-000/BraTS-GLI-00581-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00581-000/BraTS-GLI-00581-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1248.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00194-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00194-000/BraTS-GLI-00194-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00194-000/BraTS-GLI-00194-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1348.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00736-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00736-000/BraTS-GLI-00736-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00736-000/BraTS-GLI-00736-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2084.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00657-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00657-000/BraTS-GLI-00657-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00657-000/BraTS-GLI-00657-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1875.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00207-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00207-000/BraTS-GLI-00207-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00207-000/BraTS-GLI-00207-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1353.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00081-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00081-000/BraTS-GLI-00081-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00081-000/BraTS-GLI-00081-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2905.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00343-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00343-000/BraTS-GLI-00343-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00343-000/BraTS-GLI-00343-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1403.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00262-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00262-000/BraTS-GLI-00262-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00262-000/BraTS-GLI-00262-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 887.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00477-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00477-000/BraTS-GLI-00477-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00477-000/BraTS-GLI-00477-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2130.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00491-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00491-001/BraTS-GLI-00491-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00491-001/BraTS-GLI-00491-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1703.449462890625,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00193-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00193-000/BraTS-GLI-00193-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00193-000/BraTS-GLI-00193-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1120.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00483-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00483-000/BraTS-GLI-00483-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00483-000/BraTS-GLI-00483-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2108.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00571-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00571-000/BraTS-GLI-00571-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00571-000/BraTS-GLI-00571-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 873.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00714-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00714-001/BraTS-GLI-00714-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00714-001/BraTS-GLI-00714-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 591.4815673828125,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00706-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00706-000/BraTS-GLI-00706-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00706-000/BraTS-GLI-00706-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1199.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00108-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00108-000/BraTS-GLI-00108-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00108-000/BraTS-GLI-00108-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 730.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00730-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00730-000/BraTS-GLI-00730-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00730-000/BraTS-GLI-00730-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1881.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00089-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00089-000/BraTS-GLI-00089-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00089-000/BraTS-GLI-00089-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1929.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00378-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00378-000/BraTS-GLI-00378-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00378-000/BraTS-GLI-00378-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1153.7099999999627,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00290-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00290-000/BraTS-GLI-00290-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00290-000/BraTS-GLI-00290-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1661.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00049-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00049-000/BraTS-GLI-00049-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00049-000/BraTS-GLI-00049-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1027.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00077-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00077-000/BraTS-GLI-00077-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00077-000/BraTS-GLI-00077-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1982.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00237-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00237-000/BraTS-GLI-00237-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00237-000/BraTS-GLI-00237-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1797.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00480-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00480-001/BraTS-GLI-00480-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00480-001/BraTS-GLI-00480-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2038.436279296875,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00383-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00383-000/BraTS-GLI-00383-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00383-000/BraTS-GLI-00383-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1769.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00683-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00683-000/BraTS-GLI-00683-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00683-000/BraTS-GLI-00683-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2576.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00088-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00088-001/BraTS-GLI-00088-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00088-001/BraTS-GLI-00088-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 3214.175048828125,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00498-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00498-001/BraTS-GLI-00498-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00498-001/BraTS-GLI-00498-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 719.5488891601562,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00137-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00137-000/BraTS-GLI-00137-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00137-000/BraTS-GLI-00137-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 620.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00661-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00661-000/BraTS-GLI-00661-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00661-000/BraTS-GLI-00661-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2071.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00578-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00578-000/BraTS-GLI-00578-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00578-000/BraTS-GLI-00578-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1478.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00048-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00048-000/BraTS-GLI-00048-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00048-000/BraTS-GLI-00048-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2083.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00339-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00339-000/BraTS-GLI-00339-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00339-000/BraTS-GLI-00339-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1202.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00456-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00456-000/BraTS-GLI-00456-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00456-000/BraTS-GLI-00456-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1092.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00479-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00479-000/BraTS-GLI-00479-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00479-000/BraTS-GLI-00479-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 967.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00104-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00104-000/BraTS-GLI-00104-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00104-000/BraTS-GLI-00104-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 668.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00499-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00499-001/BraTS-GLI-00499-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00499-001/BraTS-GLI-00499-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 427.412353515625,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00099-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00099-001/BraTS-GLI-00099-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00099-001/BraTS-GLI-00099-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1415.197509765625,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00734-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00734-001/BraTS-GLI-00734-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00734-001/BraTS-GLI-00734-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1362.32470703125,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00446-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00446-000/BraTS-GLI-00446-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00446-000/BraTS-GLI-00446-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 6400.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00271-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00271-000/BraTS-GLI-00271-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00271-000/BraTS-GLI-00271-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1674.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00184-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00184-000/BraTS-GLI-00184-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00184-000/BraTS-GLI-00184-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1706.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00723-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00723-000/BraTS-GLI-00723-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00723-000/BraTS-GLI-00723-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1939.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00452-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00452-000/BraTS-GLI-00452-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00452-000/BraTS-GLI-00452-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2240.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00732-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00732-001/BraTS-GLI-00732-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00732-001/BraTS-GLI-00732-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1015.1997680664062,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00188-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00188-000/BraTS-GLI-00188-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00188-000/BraTS-GLI-00188-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1562.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00008-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00008-001/BraTS-GLI-00008-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00008-001/BraTS-GLI-00008-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2712.083984375,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00359-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00359-000/BraTS-GLI-00359-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00359-000/BraTS-GLI-00359-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1337.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00565-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00565-000/BraTS-GLI-00565-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00565-000/BraTS-GLI-00565-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1001.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00281-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00281-000/BraTS-GLI-00281-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00281-000/BraTS-GLI-00281-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1878.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00540-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00540-001/BraTS-GLI-00540-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00540-001/BraTS-GLI-00540-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 5145.2470703125,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00734-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00734-000/BraTS-GLI-00734-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00734-000/BraTS-GLI-00734-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1352.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00246-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00246-000/BraTS-GLI-00246-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00246-000/BraTS-GLI-00246-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1756.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00689-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00689-001/BraTS-GLI-00689-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00689-001/BraTS-GLI-00689-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 599.1384887695312,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00025-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00025-000/BraTS-GLI-00025-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00025-000/BraTS-GLI-00025-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1931.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00624-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00624-000/BraTS-GLI-00624-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00624-000/BraTS-GLI-00624-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1151.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00296-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00296-000/BraTS-GLI-00296-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00296-000/BraTS-GLI-00296-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1150.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00275-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00275-000/BraTS-GLI-00275-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00275-000/BraTS-GLI-00275-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1598.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00100-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00100-000/BraTS-GLI-00100-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00100-000/BraTS-GLI-00100-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 585.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00030-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00030-000/BraTS-GLI-00030-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00030-000/BraTS-GLI-00030-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1891.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00031-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00031-001/BraTS-GLI-00031-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00031-001/BraTS-GLI-00031-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 976.651123046875,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00544-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00544-000/BraTS-GLI-00544-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00544-000/BraTS-GLI-00544-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1309.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00727-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00727-000/BraTS-GLI-00727-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00727-000/BraTS-GLI-00727-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2284.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00097-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00097-000/BraTS-GLI-00097-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00097-000/BraTS-GLI-00097-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1716.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00676-001",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00676-001/BraTS-GLI-00676-001-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00676-001/BraTS-GLI-00676-001-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1656.13671875,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00109-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00109-000/BraTS-GLI-00109-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00109-000/BraTS-GLI-00109-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2589.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00155-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00155-000/BraTS-GLI-00155-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00155-000/BraTS-GLI-00155-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1608.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00284-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00284-000/BraTS-GLI-00284-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00284-000/BraTS-GLI-00284-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1932.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00311-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00311-000/BraTS-GLI-00311-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00311-000/BraTS-GLI-00311-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1409.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00352-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00352-000/BraTS-GLI-00352-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00352-000/BraTS-GLI-00352-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1673.1707763671875,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00024-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00024-000/BraTS-GLI-00024-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00024-000/BraTS-GLI-00024-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 1905.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    },
+    {
+      "patient_id": "BraTS-GLI-00121-000",
+      "undersampled_path": "/home/lijm2024/hm2024/projects/undersampled_raw_data_t2w_r5/BraTS-GLI-00121-000/BraTS-GLI-00121-000-t2w.nii",
+      "fully_sampled_path": "/home/lijm2024/hm2024/projects/archive/BraTS-GLI-00121-000/BraTS-GLI-00121-000-t2w.nii",
+      "num_slices": 155,
+      "norm_scale": 2662.0,
+      "total_slices": 155,
+      "kept_slices": 155,
+      "filtered_slices": 0
+    }
+  ]
+}
