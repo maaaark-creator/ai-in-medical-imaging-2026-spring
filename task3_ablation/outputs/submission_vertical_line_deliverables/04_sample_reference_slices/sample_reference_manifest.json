@@ -1,0 +1,229 @@
+{
+  "settings": {
+    "mask_type": "vertical_line",
+    "target_acceleration": 5.0,
+    "achieved_acceleration": 5.0,
+    "center_fraction": 0.1,
+    "sigma": 0.28,
+    "seed": 42,
+    "sample_metrics_json": "D:\\ai_medical_imaging\\project1\\outputs\\submission_vertical_line_deliverables\\sample_metrics.json"
+  },
+  "samples": [
+    {
+      "case_id": "BraTS-GLI-00000-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00000-000\\BraTS-GLI-00000-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00000-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00000-000_slice_077_aliased.png",
+      "psnr_db": 27.29969037480275,
+      "ssim": 0.7005690014111214
+    },
+    {
+      "case_id": "BraTS-GLI-00025-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00025-000\\BraTS-GLI-00025-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00025-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00025-000_slice_077_aliased.png",
+      "psnr_db": 26.74517448023633,
+      "ssim": 0.6949944770993381
+    },
+    {
+      "case_id": "BraTS-GLI-00058-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00058-000\\BraTS-GLI-00058-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00058-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00058-000_slice_077_aliased.png",
+      "psnr_db": 27.78978474309035,
+      "ssim": 0.6706740042270417
+    },
+    {
+      "case_id": "BraTS-GLI-00089-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00089-000\\BraTS-GLI-00089-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00089-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00089-000_slice_077_aliased.png",
+      "psnr_db": 27.941533416860565,
+      "ssim": 0.7039828738817138
+    },
+    {
+      "case_id": "BraTS-GLI-00113-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00113-000\\BraTS-GLI-00113-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00113-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00113-000_slice_077_aliased.png",
+      "psnr_db": 27.59644414876504,
+      "ssim": 0.6751064332719479
+    },
+    {
+      "case_id": "BraTS-GLI-00147-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00147-000\\BraTS-GLI-00147-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00147-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00147-000_slice_077_aliased.png",
+      "psnr_db": 28.459363379695894,
+      "ssim": 0.7147847142983927
+    },
+    {
+      "case_id": "BraTS-GLI-00187-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00187-000\\BraTS-GLI-00187-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00187-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00187-000_slice_077_aliased.png",
+      "psnr_db": 26.270654722412964,
+      "ssim": 0.6842883832809479
+    },
+    {
+      "case_id": "BraTS-GLI-00228-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00228-000\\BraTS-GLI-00228-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00228-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00228-000_slice_077_aliased.png",
+      "psnr_db": 27.223222553825863,
+      "ssim": 0.6826323921705014
+    },
+    {
+      "case_id": "BraTS-GLI-00267-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00267-000\\BraTS-GLI-00267-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00267-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00267-000_slice_077_aliased.png",
+      "psnr_db": 26.18830806674105,
+      "ssim": 0.6792957438673836
+    },
+    {
+      "case_id": "BraTS-GLI-00303-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00303-000\\BraTS-GLI-00303-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00303-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00303-000_slice_077_aliased.png",
+      "psnr_db": 25.121414034987644,
+      "ssim": 0.6911588403908168
+    },
+    {
+      "case_id": "BraTS-GLI-00340-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00340-000\\BraTS-GLI-00340-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00340-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00340-000_slice_077_aliased.png",
+      "psnr_db": 27.326018183003647,
+      "ssim": 0.6852630329887618
+    },
+    {
+      "case_id": "BraTS-GLI-00380-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00380-000\\BraTS-GLI-00380-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00380-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00380-000_slice_077_aliased.png",
+      "psnr_db": 26.304615606594666,
+      "ssim": 0.6867626332413157
+    },
+    {
+      "case_id": "BraTS-GLI-00417-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00417-000\\BraTS-GLI-00417-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00417-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00417-000_slice_077_aliased.png",
+      "psnr_db": 28.17789752653122,
+      "ssim": 0.705598321824955
+    },
+    {
+      "case_id": "BraTS-GLI-00456-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00456-000\\BraTS-GLI-00456-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00456-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00456-000_slice_077_aliased.png",
+      "psnr_db": 28.476742391165544,
+      "ssim": 0.676974258486366
+    },
+    {
+      "case_id": "BraTS-GLI-00491-001",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00491-001\\BraTS-GLI-00491-001-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00491-001_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00491-001_slice_077_aliased.png",
+      "psnr_db": 30.385137586893073,
+      "ssim": 0.767546921703985
+    },
+    {
+      "case_id": "BraTS-GLI-00514-001",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00514-001\\BraTS-GLI-00514-001-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00514-001_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00514-001_slice_077_aliased.png",
+      "psnr_db": 27.559487393564936,
+      "ssim": 0.7122409481064879
+    },
+    {
+      "case_id": "BraTS-GLI-00545-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00545-000\\BraTS-GLI-00545-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00545-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00545-000_slice_077_aliased.png",
+      "psnr_db": 28.169691222455995,
+      "ssim": 0.701803388134085
+    },
+    {
+      "case_id": "BraTS-GLI-00568-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00568-000\\BraTS-GLI-00568-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00568-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00568-000_slice_077_aliased.png",
+      "psnr_db": 29.939540220860053,
+      "ssim": 0.7327535775901837
+    },
+    {
+      "case_id": "BraTS-GLI-00599-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00599-000\\BraTS-GLI-00599-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00599-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00599-000_slice_077_aliased.png",
+      "psnr_db": 30.99320767217838,
+      "ssim": 0.7353113151997261
+    },
+    {
+      "case_id": "BraTS-GLI-00622-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00622-000\\BraTS-GLI-00622-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00622-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00622-000_slice_077_aliased.png",
+      "psnr_db": 27.760122999337348,
+      "ssim": 0.7336686032993998
+    },
+    {
+      "case_id": "BraTS-GLI-00654-001",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00654-001\\BraTS-GLI-00654-001-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00654-001_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00654-001_slice_077_aliased.png",
+      "psnr_db": 29.12214608295175,
+      "ssim": 0.7299496204632657
+    },
+    {
+      "case_id": "BraTS-GLI-00685-001",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00685-001\\BraTS-GLI-00685-001-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00685-001_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00685-001_slice_077_aliased.png",
+      "psnr_db": 27.531996253392315,
+      "ssim": 0.710380905046335
+    },
+    {
+      "case_id": "BraTS-GLI-00715-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00715-000\\BraTS-GLI-00715-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00715-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00715-000_slice_077_aliased.png",
+      "psnr_db": 28.199995316290448,
+      "ssim": 0.7140460604064001
+    },
+    {
+      "case_id": "BraTS-GLI-00739-000",
+      "slice_index": 77,
+      "source_t2w_path": "D:\\ai_medical_imaging\\project1\\raw_data\\BraTS-GLI-00739-000\\BraTS-GLI-00739-000-t2w.nii",
+      "full_slice_png": "full/BraTS-GLI-00739-000_slice_077_full.png",
+      "aliased_slice_png": "aliased/BraTS-GLI-00739-000_slice_077_aliased.png",
+      "psnr_db": 30.517021852103866,
+      "ssim": 0.7689021181305777
+    }
+  ]
+}

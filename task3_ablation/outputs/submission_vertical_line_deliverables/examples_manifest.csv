@@ -1,0 +1,6 @@
+case_id,slice_index,comparison_figure,pair_figure
+BraTS-GLI-00000-000,77,02_comparisons/BraTS-GLI-00000-000_slice_077_comparison.png,03_image_pairs/BraTS-GLI-00000-000_slice_077_pair.png
+BraTS-GLI-00177-000,77,02_comparisons/BraTS-GLI-00177-000_slice_077_comparison.png,03_image_pairs/BraTS-GLI-00177-000_slice_077_pair.png
+BraTS-GLI-00401-000,77,02_comparisons/BraTS-GLI-00401-000_slice_077_comparison.png,03_image_pairs/BraTS-GLI-00401-000_slice_077_pair.png
+BraTS-GLI-00576-000,77,02_comparisons/BraTS-GLI-00576-000_slice_077_comparison.png,03_image_pairs/BraTS-GLI-00576-000_slice_077_pair.png
+BraTS-GLI-00739-000,77,02_comparisons/BraTS-GLI-00739-000_slice_077_comparison.png,03_image_pairs/BraTS-GLI-00739-000_slice_077_pair.png

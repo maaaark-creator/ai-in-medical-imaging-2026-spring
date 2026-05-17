@@ -1,0 +1,5 @@
+case_id,slice_index,triptych,pair_error
+BraTS-GLI-00000-000,77,triptychs/BraTS-GLI-00000-000_slice_077_triptych.png,pair_error/BraTS-GLI-00000-000_slice_077_pair_error.png
+BraTS-GLI-00253-000,77,triptychs/BraTS-GLI-00253-000_slice_077_triptych.png,pair_error/BraTS-GLI-00253-000_slice_077_pair_error.png
+BraTS-GLI-00524-000,77,triptychs/BraTS-GLI-00524-000_slice_077_triptych.png,pair_error/BraTS-GLI-00524-000_slice_077_pair_error.png
+BraTS-GLI-00739-000,77,triptychs/BraTS-GLI-00739-000_slice_077_triptych.png,pair_error/BraTS-GLI-00739-000_slice_077_pair_error.png
