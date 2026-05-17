@@ -254,7 +254,7 @@ def main() -> None:
         return
 
     model = load_model(args, device)
-    criterion = HybridReconstructionLoss(l1_weight=0.85, ssim_weight=0.15)
+    criterion = HybridReconstructionLoss()
     test_loss, test_psnr, test_ssim = evaluate(model, test_loader, criterion, device)
 
     with (args.output_dir / "test_metrics.txt").open("w", encoding="utf-8") as f:

@@ -26,7 +26,17 @@ DEFAULT_UNDERSAMPLED_ROOT = REPO_ROOT / "undersampled_raw_data_t2w_vertical_line
 DEFAULT_MASKED_KSPACE_ROOT = REPO_ROOT / "masked_kspace_t2w_vertical_line_r5"
 DEFAULT_SPLIT_JSON = MODULE_DIR / "splits_seed42.json"
 DEFAULT_OUTPUT_DIR = MODULE_DIR / "outputs_task3_line"
-LOSS_KEYS = ["total_loss", "l1_loss", "ssim_loss", "weighted_l1", "weighted_ssim"]
+LOSS_KEYS = [
+    "total_loss",
+    "l1_loss",
+    "ssim_loss",
+    "low_freq_loss",
+    "intensity_loss",
+    "weighted_l1",
+    "weighted_ssim",
+    "weighted_low_freq",
+    "weighted_intensity",
+]
 
 
 def serializable_args(args: argparse.Namespace) -> dict:
@@ -61,6 +71,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--center-fraction", type=float, default=0.10)
     parser.add_argument("--sigma", type=float, default=0.28)
     parser.add_argument("--num-cascades", type=int, default=4)
+    parser.add_argument("--residual-scale", type=float, default=0.10)
     parser.add_argument("--no-kspace-refinement", action="store_true")
     parser.add_argument("--no-shared-cascade-weights", action="store_true")
     parser.add_argument("--dry-run", action="store_true", help="Build datasets/model and exit before training.")
@@ -242,8 +253,9 @@ def main() -> None:
         features=(32, 64, 128, 256),
         use_kspace_refinement=not args.no_kspace_refinement,
         share_cascade_weights=not args.no_shared_cascade_weights,
+        residual_scale=args.residual_scale,
     ).to(device)
-    criterion = HybridReconstructionLoss(l1_weight=0.85, ssim_weight=0.15)
+    criterion = HybridReconstructionLoss()
     optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=args.lr,
@@ -272,15 +284,23 @@ def main() -> None:
                 "train_loss",
                 "train_l1_loss",
                 "train_ssim_loss",
+                "train_low_freq_loss",
+                "train_intensity_loss",
                 "train_weighted_l1",
                 "train_weighted_ssim",
+                "train_weighted_low_freq",
+                "train_weighted_intensity",
                 "train_psnr",
                 "train_ssim",
                 "val_loss",
                 "val_l1_loss",
                 "val_ssim_loss",
+                "val_low_freq_loss",
+                "val_intensity_loss",
                 "val_weighted_l1",
                 "val_weighted_ssim",
+                "val_weighted_low_freq",
+                "val_weighted_intensity",
                 "val_psnr",
                 "val_ssim",
                 "lr",
@@ -315,15 +335,23 @@ def main() -> None:
                     f"{train_loss:.8f}",
                     f"{train_metrics['l1_loss']:.8f}",
                     f"{train_metrics['ssim_loss']:.8f}",
+                    f"{train_metrics['low_freq_loss']:.8f}",
+                    f"{train_metrics['intensity_loss']:.8f}",
                     f"{train_metrics['weighted_l1']:.8f}",
                     f"{train_metrics['weighted_ssim']:.8f}",
+                    f"{train_metrics['weighted_low_freq']:.8f}",
+                    f"{train_metrics['weighted_intensity']:.8f}",
                     f"{train_metrics['psnr']:.6f}",
                     f"{train_metrics['ssim']:.6f}",
                     f"{val_loss:.8f}",
                     f"{val_metrics['l1_loss']:.8f}",
                     f"{val_metrics['ssim_loss']:.8f}",
+                    f"{val_metrics['low_freq_loss']:.8f}",
+                    f"{val_metrics['intensity_loss']:.8f}",
                     f"{val_metrics['weighted_l1']:.8f}",
                     f"{val_metrics['weighted_ssim']:.8f}",
+                    f"{val_metrics['weighted_low_freq']:.8f}",
+                    f"{val_metrics['weighted_intensity']:.8f}",
                     f"{val_metrics['psnr']:.6f}",
                     f"{val_metrics['ssim']:.6f}",
                     f"{lr:.8e}",
@@ -336,15 +364,23 @@ def main() -> None:
                     "train_loss": train_loss,
                     "train_l1_loss": train_metrics["l1_loss"],
                     "train_ssim_loss": train_metrics["ssim_loss"],
+                    "train_low_freq_loss": train_metrics["low_freq_loss"],
+                    "train_intensity_loss": train_metrics["intensity_loss"],
                     "train_weighted_l1": train_metrics["weighted_l1"],
                     "train_weighted_ssim": train_metrics["weighted_ssim"],
+                    "train_weighted_low_freq": train_metrics["weighted_low_freq"],
+                    "train_weighted_intensity": train_metrics["weighted_intensity"],
                     "train_psnr": train_metrics["psnr"],
                     "train_ssim": train_metrics["ssim"],
                     "val_loss": val_loss,
                     "val_l1_loss": val_metrics["l1_loss"],
                     "val_ssim_loss": val_metrics["ssim_loss"],
+                    "val_low_freq_loss": val_metrics["low_freq_loss"],
+                    "val_intensity_loss": val_metrics["intensity_loss"],
                     "val_weighted_l1": val_metrics["weighted_l1"],
                     "val_weighted_ssim": val_metrics["weighted_ssim"],
+                    "val_weighted_low_freq": val_metrics["weighted_low_freq"],
+                    "val_weighted_intensity": val_metrics["weighted_intensity"],
                     "val_psnr": val_metrics["psnr"],
                     "val_ssim": val_metrics["ssim"],
                 }

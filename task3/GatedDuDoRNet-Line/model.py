@@ -106,9 +106,11 @@ class GatedFusionUNet(nn.Module):
         out_ch: int = 1,
         features: Sequence[int] = (32, 64, 128, 256),
         residual: bool = True,
+        residual_scale: float = 0.10,
     ) -> None:
         super().__init__()
         self.residual = residual
+        self.residual_scale = residual_scale
         self.pool = nn.MaxPool2d(2, 2)
 
         self.t2_stem = DoubleConv(in_ch, features[0])
@@ -155,6 +157,7 @@ class GatedFusionUNet(nn.Module):
 
         update = self.final_conv(x)
         if self.residual:
+            update = self.residual_scale * torch.tanh(update)
             return torch.clamp(t2 + update, min=0.0, max=1.0)
         return torch.clamp(update, min=0.0, max=1.0)
 
@@ -213,9 +216,10 @@ class GatedDuDoRNetCascade(nn.Module):
         features: Sequence[int],
         dc_blend: float,
         use_kspace_refinement: bool,
+        residual_scale: float,
     ) -> None:
         super().__init__()
-        self.image_net = GatedFusionUNet(features=features)
+        self.image_net = GatedFusionUNet(features=features, residual_scale=residual_scale)
         self.dc = DataConsistencyLayer(blend=dc_blend)
         self.use_kspace_refinement = use_kspace_refinement
         self.kspace_net = GatedKSpaceRefinementNet() if use_kspace_refinement else None
@@ -280,6 +284,7 @@ class GatedDuDoRNet(nn.Module):
         dc_blend: float = 1.0,
         use_kspace_refinement: bool = True,
         share_cascade_weights: bool = True,
+        residual_scale: float = 0.10,
     ) -> None:
         super().__init__()
         if num_cascades < 1:
@@ -290,6 +295,7 @@ class GatedDuDoRNet(nn.Module):
             features=features,
             dc_blend=dc_blend,
             use_kspace_refinement=use_kspace_refinement,
+            residual_scale=residual_scale,
         )
         if share_cascade_weights:
             self.cascade = first_cascade
@@ -304,6 +310,7 @@ class GatedDuDoRNet(nn.Module):
                             features=features,
                             dc_blend=dc_blend,
                             use_kspace_refinement=use_kspace_refinement,
+                            residual_scale=residual_scale,
                         )
                         for _ in range(num_cascades - 1)
                     ],

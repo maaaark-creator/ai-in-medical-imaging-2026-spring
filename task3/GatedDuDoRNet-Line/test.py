@@ -27,7 +27,7 @@ DEFAULT_ARCHIVE_ROOT = REPO_ROOT / "archive"
 DEFAULT_UNDERSAMPLED_ROOT = REPO_ROOT / "undersampled_raw_data_t2w_vertical_line_r5"
 DEFAULT_MASKED_KSPACE_ROOT = REPO_ROOT / "masked_kspace_t2w_vertical_line_r5"
 DEFAULT_SPLIT_JSON = MODULE_DIR / "splits_seed42.json"
-DEFAULT_OUTPUT_DIR = MODULE_DIR / "outputs_task3"
+DEFAULT_OUTPUT_DIR = MODULE_DIR / "outputs_task3_line"
 DEFAULT_CHECKPOINT = DEFAULT_OUTPUT_DIR / "best_gated_dudornet.pt"
 
 
@@ -46,6 +46,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--center-fraction", type=float, default=0.10)
     parser.add_argument("--sigma", type=float, default=0.28)
     parser.add_argument("--num-cascades", type=int, default=4)
+    parser.add_argument("--residual-scale", type=float, default=0.10)
     parser.add_argument("--no-kspace-refinement", action="store_true")
     parser.add_argument("--no-shared-cascade-weights", action="store_true")
     parser.add_argument("--num-sample-images", type=int, default=10)
@@ -70,7 +71,7 @@ def remove_blank_slices(dataset: BraTSMultiModalKSpaceDataset, zero_fraction_thr
     kept_slice_index: list[tuple[int, int]] = []
     removed = 0
 
-    for case_idx, (_, _, t2_path, _, _, num_slices) in enumerate(dataset.cases):
+    for case_idx, (_, _, t2_path, _, num_slices) in enumerate(dataset.cases):
         t2_img = nib.load(str(t2_path))
         for slice_z in range(num_slices):
             t2_slice = np.asarray(t2_img.dataobj[:, :, slice_z])
@@ -167,6 +168,7 @@ def load_model(args: argparse.Namespace, device: torch.device) -> GatedDuDoRNet:
         features=(32, 64, 128, 256),
         use_kspace_refinement=not args.no_kspace_refinement,
         share_cascade_weights=not args.no_shared_cascade_weights,
+        residual_scale=args.residual_scale,
     ).to(device)
     try:
         checkpoint = torch.load(args.checkpoint, map_location=device, weights_only=False)
@@ -318,6 +320,7 @@ def main() -> None:
         features=(32, 64, 128, 256),
         use_kspace_refinement=not args.no_kspace_refinement,
         share_cascade_weights=not args.no_shared_cascade_weights,
+        residual_scale=args.residual_scale,
     ).to(device)
 
     if args.dry_run:
@@ -325,7 +328,7 @@ def main() -> None:
         return
 
     model = load_model(args, device)
-    criterion = HybridReconstructionLoss(l1_weight=0.85, ssim_weight=0.15)
+    criterion = HybridReconstructionLoss()
     metrics = evaluate(model, test_loader, criterion, device)
 
     with (args.output_dir / "test_metrics.txt").open("w", encoding="utf-8") as f:

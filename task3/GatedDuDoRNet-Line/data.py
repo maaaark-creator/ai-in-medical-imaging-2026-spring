@@ -210,29 +210,26 @@ class BraTSMultiModalKSpaceDataset(Dataset):
         self.center_fraction = center_fraction
         self.sigma = sigma
         self.seed = seed
-        self.cases: list[tuple[str, Path, Path, Path, Path, int]] = []
+        self.cases: list[tuple[str, Path, Path, Path, int]] = []
         self.slice_index: list[tuple[int, int]] = []
 
         for case_id in case_ids:
             case_dir = self.archive_root / case_id
             t1_path = case_dir / f"{case_id}-t1n.nii"
             t2_path = case_dir / f"{case_id}-t2w.nii"
-            us_path = self.undersampled_root / case_id / f"{case_id}-t2w.nii"
             kspace_path = self.masked_kspace_root / case_id / f"{case_id}-t2w_masked_kspace.npz"
             if (
                 not t1_path.exists()
                 or not t2_path.exists()
-                or not us_path.exists()
                 or not kspace_path.exists()
             ):
                 continue
 
             t1_img = nib.load(str(t1_path))
             t2_img = nib.load(str(t2_path))
-            us_img = nib.load(str(us_path))
-            num_slices = min(t1_img.shape[2], t2_img.shape[2], us_img.shape[2])
+            num_slices = min(t1_img.shape[2], t2_img.shape[2])
             case_idx = len(self.cases)
-            self.cases.append((case_id, t1_path, t2_path, us_path, kspace_path, num_slices))
+            self.cases.append((case_id, t1_path, t2_path, kspace_path, num_slices))
 
             # Keep Dataset construction light. Filtering empty slices by reading
             # full 3D volumes is memory-heavy for BraTS, so we avoid it here.
@@ -244,7 +241,7 @@ class BraTSMultiModalKSpaceDataset(Dataset):
 
     def __getitem__(self, idx: int) -> dict[str, torch.Tensor | str | int]:
         vol_idx, slice_z = self.slice_index[idx]
-        case_id, t1_path, t2_path, us_path, kspace_path, _ = self.cases[vol_idx]
+        case_id, t1_path, t2_path, kspace_path, _ = self.cases[vol_idx]
 
         try:
             import nibabel as nib
@@ -255,20 +252,18 @@ class BraTSMultiModalKSpaceDataset(Dataset):
 
         t1_img = nib.load(str(t1_path))
         t2_img = nib.load(str(t2_path))
-        us_img = nib.load(str(us_path))
         t1_slice = np.asarray(t1_img.dataobj[:, :, slice_z], dtype=np.float32)
         t2_slice = np.asarray(t2_img.dataobj[:, :, slice_z], dtype=np.float32)
-        us_slice = np.asarray(us_img.dataobj[:, :, slice_z], dtype=np.float32)
 
         t1 = normalize_slice(t1_slice)
-        target_t2, _, target_scale = normalize_slice_with_stats(t2_slice)
-        undersampled_t2 = normalize_slice(us_slice)
+        target_t2, _, _ = normalize_slice_with_stats(t2_slice)
 
         with np.load(kspace_path) as data:
             mask = data["mask"][:, :, slice_z].astype(np.float32)
 
         full_t2_kspace = fft2c_np(target_t2)
         measured_kspace = full_t2_kspace * mask
+        undersampled_t2 = np.abs(ifft2c_np(measured_kspace)).astype(np.float32)
         t1_kspace = fft2c_np(t1)
 
         measured_kspace_ri = np.stack(

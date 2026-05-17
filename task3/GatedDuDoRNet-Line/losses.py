@@ -48,32 +48,63 @@ def ssim_loss(
 
 
 class HybridReconstructionLoss(nn.Module):
-    """L1 + SSIM loss for sharper Task 3 reconstructions."""
+    """Contrast-preserving reconstruction loss for MRI restoration."""
 
-    def __init__(self, l1_weight: float = 0.85, ssim_weight: float = 0.15) -> None:
+    def __init__(
+        self,
+        l1_weight: float = 0.90,
+        ssim_weight: float = 0.03,
+        low_freq_weight: float = 0.04,
+        intensity_weight: float = 0.03,
+    ) -> None:
         super().__init__()
         self.l1_weight = l1_weight
         self.ssim_weight = ssim_weight
+        self.low_freq_weight = low_freq_weight
+        self.intensity_weight = intensity_weight
 
     def forward(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        pred = pred.clamp(0.0, 1.0)
-        target = target.clamp(0.0, 1.0)
-        l1 = F.l1_loss(pred, target)
-        ssim = ssim_loss(pred, target)
-        return self.l1_weight * l1 + self.ssim_weight * ssim
+        return self.components(pred, target)["total_loss"]
 
     def components(self, pred: torch.Tensor, target: torch.Tensor) -> dict[str, torch.Tensor]:
         pred = pred.clamp(0.0, 1.0)
         target = target.clamp(0.0, 1.0)
-        l1 = F.l1_loss(pred, target)
+        mask = (target > 1e-4).to(dtype=pred.dtype)
+        mask_count = mask.sum().clamp_min(1.0)
+
+        l1 = (torch.abs(pred - target) * mask).sum() / mask_count
         ssim = ssim_loss(pred, target)
+        low_freq = F.l1_loss(
+            F.avg_pool2d(pred, kernel_size=9, stride=1, padding=4),
+            F.avg_pool2d(target, kernel_size=9, stride=1, padding=4),
+        )
+
+        pred_mean = (pred * mask).sum(dim=(1, 2, 3)) / mask.sum(dim=(1, 2, 3)).clamp_min(1.0)
+        target_mean = (target * mask).sum(dim=(1, 2, 3)) / mask.sum(dim=(1, 2, 3)).clamp_min(1.0)
+        pred_var = (((pred - pred_mean[:, None, None, None]) * mask) ** 2).sum(
+            dim=(1, 2, 3)
+        ) / mask.sum(dim=(1, 2, 3)).clamp_min(1.0)
+        target_var = (((target - target_mean[:, None, None, None]) * mask) ** 2).sum(
+            dim=(1, 2, 3)
+        ) / mask.sum(dim=(1, 2, 3)).clamp_min(1.0)
+        intensity = F.l1_loss(pred_mean, target_mean) + F.l1_loss(
+            torch.sqrt(pred_var.clamp_min(1e-8)),
+            torch.sqrt(target_var.clamp_min(1e-8)),
+        )
+
         weighted_l1 = self.l1_weight * l1
         weighted_ssim = self.ssim_weight * ssim
-        total = weighted_l1 + weighted_ssim
+        weighted_low_freq = self.low_freq_weight * low_freq
+        weighted_intensity = self.intensity_weight * intensity
+        total = weighted_l1 + weighted_ssim + weighted_low_freq + weighted_intensity
         return {
             "total_loss": total,
             "l1_loss": l1,
             "ssim_loss": ssim,
+            "low_freq_loss": low_freq,
+            "intensity_loss": intensity,
             "weighted_l1": weighted_l1,
             "weighted_ssim": weighted_ssim,
+            "weighted_low_freq": weighted_low_freq,
+            "weighted_intensity": weighted_intensity,
         }
