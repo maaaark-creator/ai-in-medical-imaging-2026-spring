@@ -11,7 +11,7 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = PROJECT_ROOT.parent
 
-DEFAULT_UNDERSAMPLED_DIR = DATA_ROOT / "undersampled_raw_data_t2w_r5"
+DEFAULT_UNDERSAMPLED_DIR = DATA_ROOT / "undersampled_raw_data_t2w_vertical_line_r5"
 DEFAULT_FULLY_SAMPLED_DIR = DATA_ROOT / "archive"
 DEFAULT_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task2"
 
@@ -22,6 +22,7 @@ TEST_RATIO = 0.2
 DEFAULT_CONTEXT_SLICES = 3
 DEFAULT_SLICE_FILTER = "nonzero"
 DEFAULT_NORMALIZATION = "shared"
+DEFAULT_ROBUST_PERCENTILE = 99.0
 DEFAULT_BLANK_THRESHOLD = 0.001
 DEFAULT_BATCH_SIZE = 4
 DEFAULT_EPOCHS = 30
@@ -41,7 +42,7 @@ def expand_path(path: Path | str) -> Path:
 
 
 def default_output_dir(context_slices: int, slice_filter: str, normalization: str) -> Path:
-    return DEFAULT_OUTPUT_ROOT / f"exp_25d_resnet_ctx{context_slices}_{slice_filter}_{normalization}_train"
+    return DEFAULT_OUTPUT_ROOT / f"exp_25d_resnet_vertical_line_r5_ctx{context_slices}_{slice_filter}_{normalization}_p99_train"
 
 
 def parse_dilations(value: str) -> tuple[int, ...]:
