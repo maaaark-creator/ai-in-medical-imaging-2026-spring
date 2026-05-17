@@ -65,11 +65,11 @@ def nonzero_fraction(slice_2d: np.ndarray) -> float:
     return float(np.count_nonzero(slice_2d) / slice_2d.size)
 
 
-def robust_shared_scale(volume: np.ndarray) -> float:
+def robust_shared_scale(volume: np.ndarray, percentile: float) -> float:
     nonzero = np.asarray(volume[volume > 0], dtype=np.float32)
     if nonzero.size == 0:
         return 1.0
-    scale = float(np.percentile(nonzero, 99.5))
+    scale = float(np.percentile(nonzero, percentile))
     return scale if scale > 0.0 else 1.0
 
 
@@ -82,6 +82,7 @@ class BraTS25DResNetSliceDataset(Dataset):
         context_slices: int = 3,
         slice_filter: str = "nonzero",
         normalization: str = "shared",
+        robust_percentile: float = 99.0,
         blank_threshold: float = 0.001,
         cache_size: int = 2,
         return_metadata: bool = False,
@@ -91,6 +92,8 @@ class BraTS25DResNetSliceDataset(Dataset):
         validate_normalization(normalization)
         if slice_filter not in {"all", "nonzero"}:
             raise ValueError("--slice-filter must be either 'all' or 'nonzero'.")
+        if not (0.0 < robust_percentile <= 100.0):
+            raise ValueError("--robust-percentile must be in (0, 100].")
 
         self.patient_ids = patient_ids
         self.undersampled_root = Path(undersampled_root)
@@ -98,6 +101,7 @@ class BraTS25DResNetSliceDataset(Dataset):
         self.context_slices = context_slices
         self.slice_filter = slice_filter
         self.normalization = normalization
+        self.robust_percentile = robust_percentile
         self.blank_threshold = blank_threshold
         self.cache_size = max(cache_size, 0)
         self.return_metadata = return_metadata
@@ -136,7 +140,7 @@ class BraTS25DResNetSliceDataset(Dataset):
 
             num_slices = min(us_img.shape[2], fs_img.shape[2])
             fs_data = np.asanyarray(fs_img.dataobj)
-            shared_scale = robust_shared_scale(fs_data)
+            shared_scale = robust_shared_scale(fs_data[:, :, :num_slices], self.robust_percentile)
             patient_idx = len(self.records)
             kept = 0
             filtered = 0
@@ -232,6 +236,7 @@ class BraTS25DResNetSliceDataset(Dataset):
             "shape_mismatches": self.shape_mismatches,
             "slice_filter": self.slice_filter,
             "normalization": self.normalization,
+            "robust_percentile": self.robust_percentile,
             "blank_threshold": self.blank_threshold,
             "total_slices": total,
             "kept_slices": kept,
