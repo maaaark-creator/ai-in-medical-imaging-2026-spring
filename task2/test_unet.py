@@ -32,20 +32,23 @@ LEGACY_FULLY_SAMPLED_DIR = Path(os.path.expanduser("~/Downloads/dataset/archive"
 LEGACY_OUTPUT_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables"))
 LOCAL_DATA_ROOT = PROJECT_ROOT.parent
 LOCAL_FULLY_SAMPLED_DIR = LOCAL_DATA_ROOT / "archive"
-LOCAL_UNDERSAMPLED_DIR = LOCAL_DATA_ROOT / "undersampled_raw_data_t2w_r5"
+LOCAL_UNDERSAMPLED_DIR = LOCAL_DATA_ROOT / "undersampled_raw_data_t2w_vertical_line_r5"
 LOCAL_MODEL_DIRS = [
+    PROJECT_ROOT / "outputs" / "task2" / "baseline_2d_unet_vertical_line_r5_nonzero_p99_train",
     PROJECT_ROOT / "outputs" / "task2" / "baseline_2d_unet_nonzero_train",
     PROJECT_ROOT / "outputs" / "task2" / "legacy_2d_submission_bundle_with_eval_standard" / "task2_final_deliverables",
     PROJECT_ROOT / "outputs" / "task2" / "2d_unet_baseline_nonzero",
     PROJECT_ROOT / "outputs" / "task2" / "unet_baseline",
 ]
-LOCAL_LEGACY_MODEL_DIR = PROJECT_ROOT / "task2" / "task2结果" / "task2_final_deliverables"
+LOCAL_LEGACY_MODEL_DIR = PROJECT_ROOT / "task2" / "task2缁撴灉" / "task2_final_deliverables"
 LOCAL_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task2"
 
 RANDOM_SEED = 42
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.1
 TEST_RATIO = 0.2
+DEFAULT_NORM_MODE = "target-volume-robust"
+DEFAULT_ROBUST_PERCENTILE = 99.0
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
@@ -66,6 +69,18 @@ def parse_args():
     parser.add_argument("--output-dir", type=Path, default=None, help="Override output directory.")
     parser.add_argument("--model-path", type=Path, default=None, help="Override path to best_unet.pth.")
     parser.add_argument("--seed", type=int, default=RANDOM_SEED)
+    parser.add_argument(
+        "--norm-mode",
+        choices=["separate", "target-volume-robust"],
+        default=DEFAULT_NORM_MODE,
+        help="separate: per-slice min-max; target-volume-robust: input/target share target-volume pXX scale.",
+    )
+    parser.add_argument(
+        "--robust-percentile",
+        type=float,
+        default=DEFAULT_ROBUST_PERCENTILE,
+        help="Percentile of nonzero fully sampled target volume used by --norm-mode target-volume-robust.",
+    )
     parser.add_argument(
         "--slice-grouping",
         choices=SLICE_GROUPING_CHOICES,
@@ -96,7 +111,6 @@ def resolve_paths(args):
         undersampled_dir = LOCAL_UNDERSAMPLED_DIR
         fully_sampled_dir = LOCAL_FULLY_SAMPLED_DIR
         output_dir = default_eval_output_dir(LOCAL_OUTPUT_ROOT, args.slice_grouping)
-        model_dir = LOCAL_MODEL_DIR
 
     if args.undersampled_dir is not None:
         undersampled_dir = args.undersampled_dir
@@ -129,10 +143,46 @@ def find_t2w_path(root, patient_id):
             return path
     return candidates[0]
 
+
+def robust_target_scale(volume: np.ndarray, percentile: float) -> float:
+    tissue_values = volume[volume > 0]
+    if tissue_values.size == 0:
+        return 1.0
+    scale = float(np.percentile(tissue_values, percentile))
+    if scale <= 0.0:
+        scale = float(tissue_values.max())
+    return max(scale, 1e-6)
+
+
+def normalize_slice(slice_2d: np.ndarray) -> np.ndarray:
+    slice_2d = np.asarray(slice_2d, dtype=np.float32)
+    mn, mx = float(slice_2d.min()), float(slice_2d.max())
+    if mx > mn:
+        return ((slice_2d - mn) / (mx - mn)).astype(np.float32)
+    return np.zeros_like(slice_2d, dtype=np.float32)
+
+
+def normalize_with_scale(slice_2d: np.ndarray, scale: float) -> np.ndarray:
+    slice_2d = np.asarray(slice_2d, dtype=np.float32)
+    if scale <= 0.0:
+        return np.zeros_like(slice_2d, dtype=np.float32)
+    return np.clip(slice_2d / scale, 0.0, 1.0).astype(np.float32)
+
 class BraTSSliceDataset(Dataset):
-    def __init__(self, patient_list, undersampled_root, fully_sampled_root):
+    def __init__(
+        self,
+        patient_list,
+        undersampled_root,
+        fully_sampled_root,
+        norm_mode=DEFAULT_NORM_MODE,
+        robust_percentile=DEFAULT_ROBUST_PERCENTILE,
+    ):
+        if norm_mode not in {"separate", "target-volume-robust"}:
+            raise ValueError("--norm-mode must be either 'separate' or 'target-volume-robust'.")
         self.volumes = []
         self.slice_index = []
+        self.norm_mode = norm_mode
+        self.robust_percentile = robust_percentile
         print("Loading volumes (strict pairing)...")
         for pid in tqdm(patient_list, desc="Loading patients"):
             us_path = find_t2w_path(undersampled_root, pid)
@@ -145,8 +195,13 @@ class BraTSSliceDataset(Dataset):
             except:
                 continue
             num_slices = min(us_vol.shape[2], fs_vol.shape[2])
+            norm_scale = (
+                robust_target_scale(fs_vol[:, :, :num_slices], self.robust_percentile)
+                if self.norm_mode == "target-volume-robust"
+                else 1.0
+            )
             vol_idx = len(self.volumes)
-            self.volumes.append((us_vol, fs_vol))
+            self.volumes.append((us_vol, fs_vol, norm_scale))
             for s in range(num_slices):
                 frac = target_nonzero_fraction(fs_vol[:, :, s])
                 self.slice_index.append((vol_idx, s, frac))
@@ -155,14 +210,15 @@ class BraTSSliceDataset(Dataset):
         return len(self.slice_index)
     def __getitem__(self, idx):
         vol_idx, slice_z, frac = self.slice_index[idx]
-        us_vol, fs_vol = self.volumes[vol_idx]
+        us_vol, fs_vol, norm_scale = self.volumes[vol_idx]
         img_input = us_vol[:, :, slice_z]
         img_target = fs_vol[:, :, slice_z]
-        def norm(s):
-            mn, mx = s.min(), s.max()
-            return (s - mn) / (mx - mn) if mx > mn else np.zeros_like(s)
-        img_input = norm(img_input)
-        img_target = norm(img_target)
+        if self.norm_mode == "target-volume-robust":
+            img_input = normalize_with_scale(img_input, norm_scale)
+            img_target = normalize_with_scale(img_target, norm_scale)
+        else:
+            img_input = normalize_slice(img_input)
+            img_target = normalize_slice(img_target)
         return (
             torch.from_numpy(img_input).unsqueeze(0),
             torch.from_numpy(img_target).unsqueeze(0),
@@ -275,6 +331,7 @@ def main():
     print(f"Model path         : {model_path}")
     print(f"Output dir         : {output_dir}")
     print(f"Slice grouping     : {args.slice_grouping}")
+    print(f"Norm mode          : {args.norm_mode}")
 
     us_pats = sorted(os.listdir(undersampled_dir))
     fs_pats = sorted(os.listdir(fully_sampled_dir))
@@ -286,7 +343,13 @@ def main():
     n_val = int(n_total * VAL_RATIO)
     test_patients = common[n_train+n_val:]
 
-    test_dataset = BraTSSliceDataset(test_patients, undersampled_dir, fully_sampled_dir)
+    test_dataset = BraTSSliceDataset(
+        test_patients,
+        undersampled_dir,
+        fully_sampled_dir,
+        norm_mode=args.norm_mode,
+        robust_percentile=args.robust_percentile,
+    )
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
 
     model = UNet(1, 1).to(device)
