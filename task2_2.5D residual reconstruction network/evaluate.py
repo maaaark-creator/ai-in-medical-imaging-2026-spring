@@ -23,6 +23,7 @@ from config import (
     DEFAULT_NORMALIZATION,
     DEFAULT_NUM_BLOCKS,
     DEFAULT_NUM_WORKERS,
+    DEFAULT_ROBUST_PERCENTILE,
     DEFAULT_SEED,
     DEFAULT_UNDERSAMPLED_DIR,
     default_output_dir,
@@ -52,6 +53,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--context-slices", type=int, default=DEFAULT_CONTEXT_SLICES)
     parser.add_argument("--slice-filter", choices=["all", "nonzero"], default="all")
     parser.add_argument("--normalization", choices=["independent", "shared"], default=DEFAULT_NORMALIZATION)
+    parser.add_argument("--robust-percentile", type=float, default=DEFAULT_ROBUST_PERCENTILE)
     parser.add_argument("--blank-threshold", type=float, default=DEFAULT_BLANK_THRESHOLD)
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
@@ -127,6 +129,7 @@ def main() -> None:
 
     context_slices = int(checkpoint_config.get("context_slices", args.context_slices))
     normalization = str(checkpoint_config.get("normalization", args.normalization))
+    robust_percentile = float(checkpoint_config.get("robust_percentile", args.robust_percentile))
     base_channels = int(checkpoint.get("base_channels", checkpoint_config.get("base_channels", args.base_channels)))
     num_blocks = int(checkpoint.get("num_blocks", checkpoint_config.get("num_blocks", args.num_blocks)))
     dilations = tuple(checkpoint.get("dilations", parse_dilations(checkpoint_config.get("dilations", args.dilations))))
@@ -176,6 +179,7 @@ def main() -> None:
         context_slices=context_slices,
         slice_filter=args.slice_filter,
         normalization=normalization,
+        robust_percentile=robust_percentile,
         blank_threshold=args.blank_threshold,
         cache_size=args.cache_size,
         return_metadata=True,
