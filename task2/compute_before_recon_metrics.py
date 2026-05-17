@@ -27,12 +27,14 @@ LEGACY_FULLY_SAMPLED_DIR = Path(os.path.expanduser("~/Downloads/dataset/archive"
 LEGACY_OUTPUT_DIR = Path(os.path.expanduser("~/Desktop/project1_without_rawdata/task2_final_deliverables"))
 LOCAL_DATA_ROOT = PROJECT_ROOT.parent
 LOCAL_FULLY_SAMPLED_DIR = LOCAL_DATA_ROOT / "archive"
-LOCAL_UNDERSAMPLED_DIR = LOCAL_DATA_ROOT / "undersampled_raw_data_t2w_r5"
+LOCAL_UNDERSAMPLED_DIR = LOCAL_DATA_ROOT / "undersampled_raw_data_t2w_vertical_line_r5"
 LOCAL_OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "task2"
 
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.1
 RANDOM_SEED = 42
+DEFAULT_NORM_MODE = "target-volume-robust"
+DEFAULT_ROBUST_PERCENTILE = 99.0
 
 
 def expand_path(path: Path) -> Path:
@@ -51,6 +53,13 @@ def parse_args():
     parser.add_argument("--fully-sampled-dir", type=Path, default=None, help="Override fully sampled BraTS root.")
     parser.add_argument("--output-dir", type=Path, default=None, help="Override output directory.")
     parser.add_argument("--seed", type=int, default=RANDOM_SEED)
+    parser.add_argument(
+        "--norm-mode",
+        choices=["separate", "target-volume-robust"],
+        default=DEFAULT_NORM_MODE,
+        help="separate: per-slice min-max; target-volume-robust: input/target share target-volume pXX scale.",
+    )
+    parser.add_argument("--robust-percentile", type=float, default=DEFAULT_ROBUST_PERCENTILE)
     parser.add_argument(
         "--slice-grouping",
         choices=SLICE_GROUPING_CHOICES,
@@ -104,11 +113,27 @@ def find_t2w_path(root, patient_id):
     return candidates[0]
 
 
+def robust_target_scale(volume: np.ndarray, percentile: float) -> float:
+    tissue_values = volume[volume > 0]
+    if tissue_values.size == 0:
+        return 1.0
+    scale = float(np.percentile(tissue_values, percentile))
+    if scale <= 0.0:
+        scale = float(tissue_values.max())
+    return max(scale, 1e-6)
+
+
 def norm_slice(s: np.ndarray) -> np.ndarray:
     mn, mx = s.min(), s.max()
     if mx > mn:
-        return (s - mn) / (mx - mn)
-    return np.zeros_like(s)
+        return ((s - mn) / (mx - mn)).astype(np.float32)
+    return np.zeros_like(s, dtype=np.float32)
+
+
+def norm_with_scale(s: np.ndarray, scale: float) -> np.ndarray:
+    if scale <= 0.0:
+        return np.zeros_like(s, dtype=np.float32)
+    return np.clip(s / scale, 0.0, 1.0).astype(np.float32)
 
 
 def compute_psnr_ssim(input_slice, target_slice):
@@ -151,6 +176,7 @@ def main():
     print(f"Fully sampled root : {fully_sampled_dir}")
     print(f"Output dir         : {output_dir}")
     print(f"Slice grouping     : {args.slice_grouping}")
+    print(f"Norm mode          : {args.norm_mode}")
 
     test_patients = get_test_patients(undersampled_dir, fully_sampled_dir, args.seed)
     print(f"Total test patients: {len(test_patients)}")
@@ -170,10 +196,19 @@ def main():
         fs_vol = nib.load(fs_path).get_fdata().astype(np.float32)
 
         num_slices = min(us_vol.shape[2], fs_vol.shape[2])
+        norm_scale = (
+            robust_target_scale(fs_vol[:, :, :num_slices], args.robust_percentile)
+            if args.norm_mode == "target-volume-robust"
+            else 1.0
+        )
         for s in range(num_slices):
             raw_target = fs_vol[:, :, s]
-            inp = norm_slice(us_vol[:, :, s])
-            tar = norm_slice(raw_target)
+            if args.norm_mode == "target-volume-robust":
+                inp = norm_with_scale(us_vol[:, :, s], norm_scale)
+                tar = norm_with_scale(raw_target, norm_scale)
+            else:
+                inp = norm_slice(us_vol[:, :, s])
+                tar = norm_slice(raw_target)
 
             psnr_val, ssim_val = compute_psnr_ssim(inp, tar)
             psnr_all.append(psnr_val)
