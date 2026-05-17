@@ -11,7 +11,7 @@ DEFAULT_BACKGROUND_PSNR_THRESHOLD = 56.0
 
 
 def default_eval_output_dir(output_root: Path, slice_grouping: str) -> Path:
-    return Path(output_root) / f"baseline_2d_unet_nonzero_eval_{slice_grouping}"
+    return Path(output_root) / f"baseline_2d_unet_vertical_line_r5_nonzero_p99_eval_{slice_grouping}"
 
 
 def target_nonzero_fraction(slice_2d: np.ndarray) -> float:
